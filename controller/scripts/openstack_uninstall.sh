@@ -28,3 +28,4 @@ rm -rf /etc/keystone/ /etc/nova/ /etc/cinder/ /etc/glance/ /etc/neutron
 
 
 exit
+

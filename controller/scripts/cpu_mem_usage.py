@@ -11,4 +11,4 @@ memory_usage=mem.percent
 
 cur.execute("insert into cpu_mem_usage values(now(),%s,%s)"%(cpu_usage,memory_usage))
 con.commit()
-
+ 

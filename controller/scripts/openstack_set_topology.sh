@@ -33,7 +33,7 @@ neutron subnet-create wan-net --name wan-subnet --disable-dhcp --gateway $wan_ip
 neutron router-gateway-set naanal-vrouter wan-net
 #glance image-create --name="Ubuntui 14.04 " --container-format=bare --disk-format=qcow2 --file=/opt/naanal_images/trusty-server-cloudimg-amd64-disk1.img
 #glance image-create --name Cirros --is-public true --container-format bare --disk-format qcow2 --location https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img
-glance image-create --name="Cirros"  --is-public true --container-format=bare --disk-format=qcow2 --file=/opt/naanal/images/cirros-0.3.0-x86_64-disk.img
+#glance image-create --name="Cirros"  --is-public true --container-format=bare --disk-format=qcow2 --file=/opt/naanal/images/cirros-0.3.0-x86_64-disk.img
 #glance image-create --name="Win7 Ulti"  --container-format=bare --disk-format=qcow2 --file=/opt/naanal/images/win7_snap.img
 #glance image-create --name="Windows 7"  --container-format=bare --disk-format=qcow2 --file=/opt/naanal/images/win7_snap.img
 #glance image-create --name="Ubuntu Linux" --container-format=bare --disk-format=qcow2 --file=/opt/naanal/images/trusty-server-cloudimg-amd64-disk1.img
