@@ -32,5 +32,7 @@ apt-get install -y ceilometer-api ceilometer-collector ceilometer-agent-central 
 
 apt-get install -y cinder-api cinder-scheduler lvm2 tcm  cinder-volume
 
+apt-get install -y upower dos2unix git
+
 exit
 
