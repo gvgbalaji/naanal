@@ -17,5 +17,4 @@ for ins in cur.fetchall():
 	except novaclient.exceptions.Conflict,e:
 		print e
 
- 
-cur.close()
+

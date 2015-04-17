@@ -1377,7 +1377,7 @@ function auth(fn, obj) {
 				setTimeout(function() {
 					$(obj).dialog("close");
 					$('#logout').click();
-				}, 5000);
+				}, 3000);
 			}
 
 		}
@@ -1386,3 +1386,174 @@ function auth(fn, obj) {
 	xhr.send();
 
 }
+
+//users
+
+function userssql(addel, login_nm) {
+
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+		var xhr1 = new XMLHttpRequest();
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+		var xhr1 = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	if (addel === "add" || addel === "edit") {
+
+		xhr1.onreadystatechange = function() {
+			if (xhr1.readyState == 4 && xhr1.status == 200) {
+
+				var r = document.getElementById("login_nm").value;
+				var s = document.getElementById("passwd").value;
+				var t = document.getElementById("usr_nm").value;
+				var u = document.querySelector('input[name="usr_type"]:checked').value;
+
+				if (u == "Admin") {
+					u = 1;
+					v = "";
+				} else {
+					u = 0;
+					var v = document.getElementById("ins_nm").value;
+
+				}
+
+				uri = "userssql.php?fn=" + addel + "&login_nm=" + r + "&passwd=" + s + "&usr_nm=" + t + "&usr_type=" + u + "&ins_nm=" + v;
+
+				xhr.onreadystatechange = function() {
+
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						document.getElementById("table").innerHTML = xhr.responseText;
+					}
+				}
+				xhr.open("GET", uri, true);
+				xhr.send();
+			}
+		}
+		xhr1.open("GET", "useradd.php", true);
+		xhr1.send();
+	} else if (addel === "del") {
+		xhr1.onreadystatechange = function() {
+			if (xhr1.readyState == 4 && xhr1.status == 200) {
+				uri = "userssql.php?fn=del&login_nm=" + login_nm;
+
+				xhr.onreadystatechange = function() {
+
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						document.getElementById("table").innerHTML = xhr.responseText;
+					}
+				}
+				xhr.open("GET", uri, true);
+				xhr.send();
+			}
+		}
+		xhr1.open("GET", "useradd.php", true);
+		xhr1.send();
+	} else if (addel === "del1") {
+
+		xhr1.onreadystatechange = function() {
+			var checkboxes = document.getElementsByName('group');
+			var chkVal = "(";
+
+			if (xhr1.readyState == 4 && xhr1.status == 200) {
+				for (var i = 0; i < checkboxes.length; i++) {
+					if (checkboxes[i].checked) {
+						chkVal += "'" + checkboxes[i].value + "',";
+					}
+				}
+				chkVal = chkVal.slice(0, -1);
+				chkVal += ")";
+
+				uri = "userssql.php?fn=del1&login_nm=" + chkVal;
+
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						document.getElementById("table").innerHTML = xhr.responseText;
+					}
+				}
+				xhr.open("GET", encodeURI(uri), true);
+				xhr.send();
+
+			}
+		}
+		xhr1.open("GET", "userssql.php", true);
+		xhr1.send();
+	} else if (addel === "srch") {
+		var login_nm = document.getElementById("srch").value;
+		xhr1.onreadystatechange = function() {
+			if (xhr1.readyState == 4 && xhr1.status == 200) {
+
+				uri = "userssql.php?fn=srch&login_nm=" + login_nm;
+
+				xhr.onreadystatechange = function() {
+
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						document.getElementById("table").innerHTML = xhr.responseText;
+					}
+				}
+				xhr.open("GET", uri, true);
+				xhr.send();
+			}
+		}
+		xhr1.open("GET", "useradd.php", true);
+		xhr1.send();
+	} else {
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				document.getElementById("table").innerHTML = xhr.responseText;
+			}
+		}
+		xhr.open("GET", "userssql.php", true);
+		xhr.send();
+	}
+
+}
+
+function useradd(addel, s, t, u, v, w) {
+
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			document.getElementById("table").innerHTML = xhr.responseText;
+			$(".usr_type").click(function() {
+				usr_type = document.querySelector('input[name="usr_type"]:checked').value;
+				if (usr_type == "Admin") {
+					$("#ins_tr").hide();
+				} else if (usr_type == "User") {
+					$("#ins_tr").show();
+				}
+			});
+
+			if (addel === 'add') {
+
+				document.getElementById("login_nm").value = s;
+				document.getElementById("login_nm").disabled = true;
+				document.getElementById("passwd").value = t;
+				document.getElementById("usr_nm").value = u;
+				if (w == 1) {
+					w = "Admin";
+					document.getElementById(w).checked = true;
+					$("#ins_tr").hide();
+				} else if (w == 0) {
+					w = "User";
+					document.getElementById(w).checked = true;
+					$("#ins_tr").show();
+					document.getElementById(v).selected = true;
+				}
+				document.getElementById("groupform").action = "javascript:userssql('edit')";
+
+			}
+
+		}
+	}
+
+	xhr.open("GET", "useradd.php", true);
+	xhr.send();
+
+}
+
