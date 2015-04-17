@@ -9,7 +9,7 @@ $fl_nm = $_GET['fl_nm'];
 $id = $_GET['id'];
 
 if ($fn == 'add') {
-	$target_path = "/opt/naanal_images/" . $fl_nm;
+	$target_path = "/opt/naanal/images/" . $fl_nm;
 	$cmd = "glance $auth_cmd image-create --name=$img_nm --container-format=bare --disk-format=$df --file=$target_path ";
 	exec($cmd);
 	//echo $cmd;

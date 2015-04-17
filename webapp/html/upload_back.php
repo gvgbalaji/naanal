@@ -15,7 +15,7 @@ if (isset($_FILES)) {
 	if (in_array($ext, $allowed)) {
 
 		$name = basename($_FILES['file1']['name']);
-		$target_path = "/opt/naanal_images/" . $name;
+		$target_path = "/opt/naanal/images/" . $name;
 		if (!file_exists($target_path)) {
 			if (move_uploaded_file($_FILES['file1']['tmp_name'], $target_path)) {
 				echo '<input type="hidden" id="fl_nm" value="' . $name . '">';

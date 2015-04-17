@@ -10,6 +10,6 @@
 # bits.
 #
 # By default this script does nothing.
-python /opt/naanal/controller/scripts/autostart.py &
+/usr/bin/python /opt/naanal/controller/scripts/autostart.py &
 
 exit 0
