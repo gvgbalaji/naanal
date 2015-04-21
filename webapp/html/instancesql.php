@@ -54,7 +54,7 @@ function instancedel($ser) {
 	$cmd1 = "nova $auth_cmd delete $ser";
 	//echo $cmd1;
 	exec($cmd1);
-	$autoq = "delete from naanal.custom_setting where instance='$server'";
+	$autoq = "delete from naanal.custom_setting where instance='$ser'";
 	mysql_query($autoq, $con2);
 
 }
@@ -96,17 +96,13 @@ function start($ser) {
 
 function stop($ser) {
 	global $auth_cmd, $con2;
-	$q = "select power_state,id,os_type from nova.instances where display_name='$ser' and deleted=0";
+	$q = "select power_state,id from nova.instances where display_name='$ser' and deleted=0";
 	$query = mysql_query($q, $con2);
 	$pow_state = mysql_result($query, 0, 0);
 	$id = mysql_result($query, 0, 1);
-	$os_type = mysql_result($query, 0, 2);
 	if ($pow_state == 1) {
-		if ($os_type == null) {
-			$cmd = "nova $auth_cmd stop $ser";
-		} else {
-			$cmd = "virsh shutdown instance-" . substr("00000000" . dechex($id), -8);
-		}
+		$cmd = "sudo virsh shutdown instance-" . substr("00000000" . dechex($id), -8);
+
 		//echo $cmd;
 		exec($cmd);
 	}
@@ -151,6 +147,7 @@ if ($sub_fn == 'activity') {
 	} elseif ($fn == 'cons') {
 
 		$cmd = "nova $auth_cmd get-vnc-console $server novnc | awk '{split($4,a,\"Url\");print a[1] }' | awk '/http/'";
+		//$cmd = "nova $auth_cmd get-spice-console $server spice-html5 | awk '{split($4,a,\"Url\");print a[1] }' | awk '/http/'";
 		//echo $cmd;
 		exec($cmd, $output, $result);
 		//echo $output[0];
@@ -187,9 +184,11 @@ if ($sub_fn == 'activity') {
 
 		}
 		if ($flv_nm != $org_flv_nm) {
-			$cmd1 = "nova $auth_cmd resize $server $org_flv_nm";
+			$cmd1 = "nova $auth_cmd resize $server $flv_nm --poll";
 			//echo $cmd1;
 			exec($cmd1);
+			$cmd2="nova $auth_cmd resize-confirm $server";
+			exec($cmd2);
 		}
 		if ($flt_ip != $org_flt_ip) {
 			floatip_dis_associate();
@@ -285,13 +284,13 @@ while ($row = mysql_fetch_array($result)) {
 	}
 
 	$row[5] = lcfirst($row[5]);
-	
-	$autostart_text="Disabled";
-	
-	if($row[9]==1){
-	$autostart_text="Enabled";
+
+	$autostart_text = "Disabled";
+
+	if ($row[9] == 1) {
+		$autostart_text = "Enabled";
 	}
-	
+
 	$q2 = "select flavorid from nova.instance_types  where id = $row[8] ";
 	$ins_typ_id = mysql_result(mysql_query($q2, $con2), 0, 0);
 

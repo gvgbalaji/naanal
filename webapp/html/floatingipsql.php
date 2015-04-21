@@ -40,7 +40,7 @@ if ($fn == 'add') {
 }
 
 $query = "select floating_ip_address,status,(select display_name from nova.instances where uuid=(select device_id from neutron.ports where id=fixed_port_id) ) from neutron.floatingips order by floating_ip_address";
-$servq = "select display_name from nova.instances where deleted = 0";
+$servq = "select display_name from nova.instances where deleted = 0 and vm_state!='deleted'";
 
 $result = mysql_query($query, $con2);
 $result1 = mysql_query($servq, $con2);

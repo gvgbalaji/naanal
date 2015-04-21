@@ -4,6 +4,7 @@
 		include 'arrays.inc';
 
 		require ("loginproc.php");
+		require ("blockuser.php");
 		?>
 		<title>Naanal Technologies</title>
 		<script language="javascript" src="home.js"></script>
@@ -59,47 +60,47 @@
 					echo '<li  > <a href="javascript:' . $fn . '"  class="leftnav-anc nav-button" id= ' . $val . '><img class="img_icons" src="images/' . $val . '.ico"  > ' . $val . '</a></li>';
 				}
 				?>
-			</div>
-			<div id="header" class="home"><img class="home" id="logo" src="naanal.png"/>
-				<a href="#" id="logoutText" onclick="location.href='logout.php'">Logout</a>
-				<input type="image" id="logout" src="logout.ico" onclick="location.href='logout.php'"/>
-				<div id="welcome">
-					<?php $welcome = "Welcome " . ucfirst($_SESSION['username']);
-					echo $welcome;
-					?>
+				</div>
+				<div id="header" class="home"><img class="home" id="logo" src="naanal.png"/>
+					<a href="#" id="logoutText" onclick="location.href='logout.php'">Logout</a>
+					<input type="image" id="logout" src="logout.ico" onclick="location.href='logout.php'"/>
+					<div id="welcome">
+						<?php $welcome = "Welcome " . ucfirst($_SESSION['name']);
+						echo $welcome;
+						?>
+					</div>
+
+					<div id="topnav"></div>
 				</div>
 
-				<div id="topnav"></div>
-			</div>
+				<div id="table"></div>
+				<div>
+					<input type="hidden" id="ins_limit" value=<?php echo "'$ins_limit'"; ?> />
+					<input type="hidden" id="ins_offset" value=0 />
+					<input type="hidden" id="instance_int" />
+				</div>
+				<div id="dialog-confirm" title="Delete Items">
+					<p>
+						<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?
+					</p>
+				</div>
 
-			<div id="table"></div>
-			<div>
-				<input type="hidden" id="ins_limit" value=<?php echo "'$ins_limit'"; ?> />
-				<input type="hidden" id="ins_offset" value=0 />
-				<input type="hidden" id="instance_int" />
-			</div>
-			<div id="dialog-confirm" title="Delete Items">
-				<p>
-					<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?
-				</p>
-			</div>
-
-			<div id="snapshot" title="Snapshot">
-				<p id="snapshot_table">
-
-				</p>
-				<div id="host" title="Please Make sure no one is using any Instance">
-					<p id="host_table">
+				<div id="snapshot" title="Snapshot">
+					<p id="snapshot_table">
 
 					</p>
+					<div id="host" title="Please Make sure no one is using any Instance">
+						<p id="host_table">
+
+						</p>
+
+					</div>
+
+					<div id="footer">
+
+						© Naanal Technologies
+					</div>
 
 				</div>
-
-				<div id="footer">
-
-					© Naanal Technologies
-				</div>
-
-			</div>
 	</body>
 </html>

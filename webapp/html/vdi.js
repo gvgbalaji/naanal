@@ -1377,7 +1377,7 @@ function auth(fn, obj) {
 				setTimeout(function() {
 					$(obj).dialog("close");
 					$('#logout').click();
-				}, 3000);
+				}, 5000);
 			}
 
 		}
@@ -1419,6 +1419,11 @@ function userssql(addel, login_nm) {
 				}
 
 				uri = "userssql.php?fn=" + addel + "&login_nm=" + r + "&passwd=" + s + "&usr_nm=" + t + "&usr_type=" + u + "&ins_nm=" + v;
+
+				if (addel === "edit") {
+					x = document.getElementById("usr_org_pass").value;
+					uri = uri + "&prev_passwd=" + x;
+				}
 
 				xhr.onreadystatechange = function() {
 
@@ -1478,25 +1483,6 @@ function userssql(addel, login_nm) {
 		}
 		xhr1.open("GET", "userssql.php", true);
 		xhr1.send();
-	} else if (addel === "srch") {
-		var login_nm = document.getElementById("srch").value;
-		xhr1.onreadystatechange = function() {
-			if (xhr1.readyState == 4 && xhr1.status == 200) {
-
-				uri = "userssql.php?fn=srch&login_nm=" + login_nm;
-
-				xhr.onreadystatechange = function() {
-
-					if (xhr.readyState == 4 && xhr.status == 200) {
-						document.getElementById("table").innerHTML = xhr.responseText;
-					}
-				}
-				xhr.open("GET", uri, true);
-				xhr.send();
-			}
-		}
-		xhr1.open("GET", "useradd.php", true);
-		xhr1.send();
 	} else {
 
 		xhr.onreadystatechange = function() {
@@ -1520,6 +1506,7 @@ function useradd(addel, s, t, u, v, w) {
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			document.getElementById("table").innerHTML = xhr.responseText;
+
 			$(".usr_type").click(function() {
 				usr_type = document.querySelector('input[name="usr_type"]:checked').value;
 				if (usr_type == "Admin") {
@@ -1529,11 +1516,21 @@ function useradd(addel, s, t, u, v, w) {
 				}
 			});
 
+			$("#edit_passwd").click(function() {
+				if ($("#passwd").prop("disabled") == true) {
+					$("#passwd").prop("disabled", false);
+				} else {
+					$("#passwd").prop("disabled", true);
+				}
+			});
+
 			if (addel === 'add') {
 
 				document.getElementById("login_nm").value = s;
 				document.getElementById("login_nm").disabled = true;
 				document.getElementById("passwd").value = t;
+				document.getElementById("passwd").disabled = true;
+				document.getElementById("usr_org_pass").value = t;
 				document.getElementById("usr_nm").value = u;
 				if (w == 1) {
 					w = "Admin";

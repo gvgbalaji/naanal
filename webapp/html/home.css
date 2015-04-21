@@ -267,6 +267,7 @@ height: 20px;
 
 }
 
+
 #additional {
 
 	position:absolute;
@@ -613,3 +614,12 @@ li{
 	width : 100%;
 }
 
+
+#table2 {
+	position: absolute;
+	left: 200;
+	top: 60px;
+	width: 80%;
+
+
+}

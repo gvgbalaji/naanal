@@ -15,15 +15,15 @@ $q1 = "SELECT flavorid,name,memory_mb,root_gb,vcpus FROM nova.instance_types whe
 function flavoradd($flv_nm, $flv_id, $ram, $disk, $vcpu) {
 	global $auth_cmd;
 	$cmd = "nova $auth_cmd flavor-create $flv_nm $flv_id $ram $disk $vcpu";
-	echo $cmd;
-	//exec($cmd);
+	//echo $cmd;
+	exec($cmd);
 }
 
 function flavordelete($flv_id) {
 	global $auth_cmd;
 	$cmd = "nova $auth_cmd flavor-delete $flv_id";
-	echo $cmd;
-	//exec($cmd);
+	//echo $cmd;
+	exec($cmd);
 }
 
 if ($fn == 'add') {

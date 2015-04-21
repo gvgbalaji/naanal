@@ -5,7 +5,7 @@
 		$auth_cmd = $_SESSION['auth_cmd'];
 
 		//$servq = "select display_name from nova.instances where deleted = 0";
-		$servq = "SELECT display_name,(select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted';";
+		$servq = "SELECT display_name,(select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted'and deleted=0 ;";
 		$result1 = mysql_query($servq, $con2);
 		?>
 	</head>
