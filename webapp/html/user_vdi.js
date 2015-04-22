@@ -5,7 +5,7 @@ function user_action(fn) {
 	} else {
 		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	if (fn === 'start' || fn === 'stop') {
+	if (fn === 'start' || fn === 'stop' || fn === 'reboot' ) {
 		ins = document.getElementById("ifr").src;
 		uri = "user_action.php?fn=" + fn + "&ins=" + ins;
 		xhr.onreadystatechange = function() {
