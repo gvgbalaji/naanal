@@ -10,6 +10,7 @@
 # bits.
 #
 # By default this script does nothing.
-/usr/bin/python /opt/naanal/controller/scripts/autostart.py &
+/usr/bin/python /opt/naanal/controller/scripts/autostart.py || /bin/true
 
+/bin/sh /opt/naanal/controller/scripts/wan_rescue.sh &
 exit 0

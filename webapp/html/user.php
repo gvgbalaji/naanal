@@ -44,7 +44,7 @@
 		<div id="table2">
 			<div>
 				
-				<a href="<?php echo $ser.".rdp"; ?>"><input type="button" value="RDP" class="leftnav-button" /></a>
+				<a href="<?php echo "rdp/$user.rdp"; ?>"><input type="button" value="RDP" class="leftnav-button" /></a>
 				<input type="button" value="Start" onclick="user_action('start')" class="leftnav-button" />
 				<input type="button" value="Stop" onclick="user_action('stop')"class="leftnav-button" />
 				<input type="button" value="Reboot" onclick="user_action('reboot')"class="leftnav-button" />

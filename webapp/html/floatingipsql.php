@@ -5,6 +5,24 @@ $fn = $_GET['fn'];
 $flt_ip = $_GET['flt_ip'];
 $server = $_GET['server'];
 
+function rdp_fn($action, $nm, $ip, $user = "root") {
+	$filename = "rdp/$nm.rdp";
+	if ($action == "add") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+		$content = file_get_contents("rdp/template.rdp");
+		$content = str_replace("FLOATING_IP", $ip, $content);
+		$content = str_replace("USER", $user, $content);
+		file_put_contents($filename, $content);
+
+	} elseif ($action == "delete") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+	}
+}
+
 if ($fn == 'add') {
 	$cmd = "nova $auth_cmd floating-ip-create wan-net";
 	exec($cmd);
@@ -13,14 +31,31 @@ if ($fn == 'add') {
 	$cmd = "nova $auth_cmd floating-ip-disassociate $server $flt_ip";
 	exec($cmd);
 	//echo $cmd;
+
+	$query = "select username from naanal.user where instance='$server'";
+	$result = mysql_query($query, $con2);
+	while ($row = mysql_fetch_array($result)) {
+		rdp_fn("add", $row[0], '');
+	}
+
 } elseif ($fn == 'asc') {
 	$cmd = "nova $auth_cmd floating-ip-associate $server $flt_ip";
 	exec($cmd);
 	//echo $cmd;
+
+	$query = "select username from naanal.user where instance='$server'";
+	$result = mysql_query($query, $con2);
+	while ($row = mysql_fetch_array($result)) {
+		rdp_fn("add", $row[0], $flt_ip);
+	}
+
 } elseif ($fn == 'del') {
 	$cmd = "nova $auth_cmd floating-ip-delete $flt_ip";
 	exec($cmd);
 	//echo $cmd;
+
+	
+
 } elseif ($fn == 'del1') {
 
 	$tmp = str_replace("'", "", $flt_ip);
@@ -34,6 +69,7 @@ if ($fn == 'add') {
 			$cmd = "nova $auth_cmd floating-ip-delete $val";
 			exec($cmd);
 			//echo $cmd;
+			
 		}
 	}
 
@@ -47,7 +83,7 @@ $result1 = mysql_query($servq, $con2);
 
 $serv_array = array();
 while ($row = mysql_fetch_array($result1)) {
-	array_push($serv_array,$row[0]);
+	array_push($serv_array, $row[0]);
 }
 
 echo "<input type='button' class='addel-button' value='Add' onclick='floatingipsql(\"add\")'/>&nbsp;&nbsp;<input type='button' class='addel-button' onclick='delconf(floatingipsql,\"del1\")' value='Delete'/></td></tr>";
@@ -57,12 +93,12 @@ while ($row = mysql_fetch_array($result)) {
 		$row[1] = "Not Allocated";
 		$opt = "Associate";
 		$clr = 'Black';
-		$opt_var="asc";
+		$opt_var = "asc";
 	} else {
 		$row[1] = "Allocated";
 		$opt = "Disassociate";
 		$clr = 'Red';
-		$opt_var="dis";
+		$opt_var = "dis";
 	}
 	echo "<tr><td><input type='checkbox' value='" . $row[0] . "' name='group' ></td><td>$row[0]</td><td>$row[2]</td>";
 	echo "<td><input type='button' class='vdi-btn' onclick='floatingipsql(\"$opt_var\",\"$row[0]\",\"$row[2]\")' value='$opt' title='$opt' style=\"color:$clr\" />";

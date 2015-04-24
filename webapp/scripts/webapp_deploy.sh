@@ -16,7 +16,7 @@ mysql_passwd=password
 email=contact@naanalnetworks.com
 region=regionOne
 token=token
-WEBAPP=/opt/naanal/webapp/
+WEBAPP=/opt/naanal/webapp
 
 
 mysql -u root --password=$mysql_passwd <<EOF
@@ -62,6 +62,8 @@ rm -rf /var/www/html/
 cp -rf $WEBAPP/html /var/www/
 cp -rf $WEBAPP/images /var/www/html/
 cp -rf $WEBAPP/js /var/www/html/
+mkdir /var/www/html/rdp
+cp -f $WEBAPP/conf/template.rdp /var/www/html/rdp/
 
 chmod a+x -R /var/www/html/
 chmod 777 -R /opt/naanal/images

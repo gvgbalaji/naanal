@@ -12,6 +12,24 @@ $ins_nm = $_GET['ins_nm'];
 $admin_flag = $_GET['usr_type'];
 $prev_passwd = $_GET['prev_passwd'];
 
+function rdp_fn($action, $nm, $ip, $user = "root") {
+	$filename = "rdp/$nm.rdp";
+	if ($action == "add") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+		$content = file_get_contents("rdp/template.rdp");
+		$content = str_replace("FLOATING_IP", $ip, $content);
+		$content = str_replace("USER", $user, $content);
+		file_put_contents($filename, $content);
+
+	} elseif ($action == "delete") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+	}
+}
+
 if ($fn == 'add') {
 
 	$num_rows = mysql_result(mysql_query("select count(*) from naanal.user where username='$login_nm'", $con2), 0);
@@ -20,6 +38,12 @@ if ($fn == 'add') {
 		$query = "insert into naanal.user values('$login_nm',md5('$passwd'),'$usr_nm','$ins_nm',$admin_flag)";
 		$result = mysql_query($query, $con2);
 
+		if ($admin_flag == 0) {
+			$query = "SELECT (select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted'and deleted=0 and display_name='$ins_nm' ;";
+			$flt_ip = mysql_result(mysql_query($query, $con2), 0, 0);
+
+			rdp_fn("add", $login_nm, $flt_ip);
+		}
 	}
 } elseif ($fn == 'edit') {
 
@@ -30,12 +54,36 @@ if ($fn == 'add') {
 		$query = "update naanal.user set password=md5('$passwd'),tenant='$usr_nm',instance='$ins_nm',admin_flag=$admin_flag where username='$login_nm'";
 		$result = mysql_query($query, $con2);
 	}
+
+	if ($admin_flag == 0) {
+		$query = "SELECT (select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted'and deleted=0 and display_name='$ins_nm' ;";
+		$flt_ip = mysql_result(mysql_query($query, $con2), 0, 0);
+
+		rdp_fn("add", $login_nm, $flt_ip);
+	}
 } elseif ($fn == 'del') {
 	$query = "delete from naanal.user where username='$login_nm';";
 	$result = mysql_query($query, $con2);
+
+	rdp_fn("delete", $login_nm);
+
 } elseif ($fn == 'del1') {
 	$query = "delete from naanal.user where username in '$login_nm';";
 	$result = mysql_query($query, $con2);
+
+	$tmp = str_replace("'", "", $login_nm);
+	$tmp = str_replace("(select,", "", $tmp);
+	$tmp = str_replace("select", "", $tmp);
+	$tmp = str_replace("(", "", $tmp);
+	$tmp = str_replace(")", "", $tmp);
+	$arr = explode(",", $tmp);
+	foreach ($arr as $val) {
+		if (!empty($val)) {
+			rdp_fn("delete", $val);
+
+		}
+	}
+
 }
 $query = "select * from naanal.user order by tenant";
 

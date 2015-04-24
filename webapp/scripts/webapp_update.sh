@@ -16,13 +16,13 @@ mysql_passwd=password
 email=contact@naanalnetworks.com
 region=regionOne
 token=token
-WEBAPP=/opt/naanal/webapp/
+WEBAPP=/opt/naanal/webapp
 
 #Database updates#
 
-mysql -u root --password=$mysql_passwd <<EOF
+#mysql -u root --password=$mysql_passwd <<EOF
 
-EOF
+#EOF
 
 #Webapp Files#
  
@@ -36,6 +36,8 @@ rm -rf /var/www/html/
 cp -rf $WEBAPP/html /var/www/
 cp -rf $WEBAPP/images /var/www/html/
 cp -rf $WEBAPP/js /var/www/html/
+mkdir /var/www/html/rdp
+cp -f $WEBAPP/conf/template.rdp /var/www/html/rdp/
 
 #Permissions#
 
@@ -50,4 +52,8 @@ setfacl -d -m u::rwx,g::rwx,o::rwx /var/www/html/glance/images/
 
 service apache2 restart
  
+#Non WEBAPP Files#
+cp opt/naanal/controller/conf/rc.local /etc/
+ 
+
 exit

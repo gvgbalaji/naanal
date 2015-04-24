@@ -31,6 +31,24 @@ if ($num_rows == 0) {
 }
 $current_page = ceil(($offset + 1) / $limit);
 
+function rdp_fn($action, $nm, $ip, $user = "root") {
+	$filename = "rdp/$nm.rdp";
+	if ($action == "add") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+		$content = file_get_contents("rdp/template.rdp");
+		$content = str_replace("FLOATING_IP", $ip, $content);
+		$content = str_replace("USER", $user, $content);
+		file_put_contents($filename, $content);
+
+	} elseif ($action == "delete") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+	}
+}
+
 function instanceadd() {
 	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $net_id, $flt_ip, $max_count, $autostart, $con2;
 
@@ -41,6 +59,7 @@ function instanceadd() {
 	$autoq = "insert into naanal.custom_setting(instance,autostart) values('$server',$autostart)";
 	//echo $autoq;
 	mysql_query($autoq, $con2);
+
 	if ($flt_ip != 'none') {
 		$cmd2 = "nova $auth_cmd floating-ip-associate $server $flt_ip";
 		//echo $cmd2;
@@ -54,6 +73,13 @@ function instancedel($ser) {
 	$cmd1 = "nova $auth_cmd delete $ser";
 	//echo $cmd1;
 	exec($cmd1);
+
+	$query = "select username from naanal.user where instance='$ser'";
+	$result = mysql_query($query, $con2);
+	while ($row = mysql_fetch_array($result)) {
+		rdp_fn("delete", $row[0]);
+	}
+
 	$autoq = "delete from naanal.custom_setting where instance='$ser'";
 	mysql_query($autoq, $con2);
 
@@ -71,14 +97,22 @@ function floatip_dis_associate() {
 }
 
 function floatip_associate() {
-	global $auth_cmd, $server, $flt_ip;
+	global $auth_cmd, $server, $flt_ip, $con2;
 
 	if ($flt_ip != 'none') {
 		$cmd = "nova $auth_cmd floating-ip-associate $server $flt_ip";
 		//echo $cmd;
-
 		exec($cmd);
+	} else {
+		$flt_ip = '';
 	}
+
+	$query = "select username from naanal.user where instance='$server'";
+	$result = mysql_query($query, $con2);
+	while ($row = mysql_fetch_array($result)) {
+		rdp_fn("add", $row[0], $flt_ip);
+	}
+
 }
 
 function start($ser) {
@@ -187,7 +221,7 @@ if ($sub_fn == 'activity') {
 			$cmd1 = "nova $auth_cmd resize $server $flv_nm --poll";
 			//echo $cmd1;
 			exec($cmd1);
-			$cmd2="nova $auth_cmd resize-confirm $server";
+			$cmd2 = "nova $auth_cmd resize-confirm $server";
 			exec($cmd2);
 		}
 		if ($flt_ip != $org_flt_ip) {

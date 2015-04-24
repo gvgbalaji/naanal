@@ -13,7 +13,7 @@ if (!(mysql_num_rows($login) == 1)) {
 } elseif($admin_flag==1){
 	if ($fn == "shutdown" || $fn == "reboot") {
 
-		exec("sudo ./host_shut.py $fn", $out, $res);
+		exec("sudo ./host_shut.sh $fn", $out, $res);
 		//$rep = print_r($out);
 		$rep = "System Will $fn in a minute";
 		$key = 1;
