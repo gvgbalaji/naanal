@@ -67,6 +67,7 @@ cp -f $WEBAPP/conf/template.rdp /var/www/html/rdp/
 
 chmod a+x -R /var/www/html/
 chmod 777 -R /opt/naanal/images
+chmod 777  /var/www/html/rdp/template.rdp
 
 ln -s /var/lib/glance /var/www/html/
 
