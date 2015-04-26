@@ -74,7 +74,7 @@ usermod -a -G glance www-data
 
 setfacl -d -m u::rwx,g::rwx,o::rwx /var/www/html/glance/images/
 
-cd /opt/naanal/webapp/scripts && ./cpu_mem_usage.py
+cd /opt/naanal/controller/scripts && ./cpu_mem_usage.py
 
 service apache2 restart
  
