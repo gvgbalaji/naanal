@@ -8,15 +8,28 @@ fi
 
 apt-get update
 
-# bridge stuff
+
 apt-get install vim ntp dos2unix git openssh-server -y
 
-apt-get install -y python-keystoneclient python-glanceclient pyhton-novaclient python-neutronclient python-ceilometerclient python-cinderclient 
+apt-get install -y python-keystoneclient python-glanceclient python-novaclient python-neutronclient python-ceilometerclient python-cinderclient 
 
-#apt-get install -y openstack-dashboard libapache2-mod-php5 php5-mysql
+apt-get install -y libapache2-mod-php5 php5-mysql php5-dev pkg-config php-pear
+
 apt-get install -y openstack-dashboard 
 
 apt-get install -y openvpn
+
+wget http://download.zeromq.org/zeromq-4.0.5.tar.gz 
+tar -xvzf zeromq-4.0.5.tar.gz
+cd zeromq-4.0.5
+./configure
+make
+sudo make install
+sudo ldconfig
+
+pecl install zmq-beta
+
+cd /opt/naanal/manager/webapp/scripts && ./webapp_deploy.sh
 
 exit
 

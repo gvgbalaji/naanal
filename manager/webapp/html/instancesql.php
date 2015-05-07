@@ -1,6 +1,7 @@
 <?php
 require 'loginproc.php';
 include 'arrays.inc';
+include 'zmq_fn.php';
 
 $fn = $_GET['fn'];
 $sub_fn = $_GET['sub_fn'];
@@ -136,9 +137,11 @@ function stop($ser) {
 	$id = mysql_result($query, 0, 1);
 	if ($pow_state == 1) {
 		$cmd = "sudo virsh shutdown instance-" . substr("00000000" . dechex($id), -8);
-
 		//echo $cmd;
-		exec($cmd);
+		//exec($cmd);
+		$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
+		$out = zmq_exec($arr1);
+
 	}
 
 }

@@ -34,5 +34,7 @@ apt-get install -y cinder-api cinder-scheduler lvm2 tcm  cinder-volume
 
 apt-get install -y upower dos2unix git
 
+apt-get install -y python-zmq
+
 exit
 

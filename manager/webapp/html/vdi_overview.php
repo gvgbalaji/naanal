@@ -3,8 +3,14 @@
 		<?php
 		require 'loginproc.php';
 		include 'arrays.inc';
+		include 'zmq_fn.php';
 
-		exec(" df -h -BG --total | grep 'total' | awk '{print $2}' && nproc | awk '{print $0*$core_multiplier}' && vmstat -s  | grep 'total memory' | awk '{print $1/1000}'", $out, $res);
+		//exec(" df -h -BG --total | grep 'total' | awk '{print $2}' && nproc | awk '{print $0*$core_multiplier}' && vmstat -s  | grep 'total memory' | awk '{print $1/1000}'", $out, $res);
+
+		$cmd = " df -h -BG --total | grep 'total' | awk '{print $2}' && nproc | awk '{print $0*7.5}' && vmstat -s  | grep 'total memory' | awk '{print $1/1000}'";
+		$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
+		$out = zmq_exec($arr1);
+
 		$num_rows = mysql_result(mysql_query("select count(*) from nova.instances where deleted=0 and vm_state!='deleted'", $con2), 0);
 
 		$total_pages = ceil($num_rows / $vm_limit);

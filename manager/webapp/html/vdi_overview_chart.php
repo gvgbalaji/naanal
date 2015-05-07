@@ -1,13 +1,17 @@
 <?php
 require 'loginproc.php';
 include 'arrays.inc';
+include 'zmq_fn.php';
 //include 'config.inc';
 
 $vm_offset = $_GET['vm_offset'];
 
 //Time
 $cmd = "uptime -s && uptime -p";
-exec($cmd, $output, $result);
+//exec($cmd, $output, $result);
+$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
+$output = zmq_exec($arr1);
+
 $st = '"st" :["' . $output[0] . '"]';
 $output[1] = str_replace("up ", "", $output[1]);
 $ut = '"ut" :["' . $output[1] . '"]';
@@ -15,33 +19,32 @@ $ut = '"ut" :["' . $output[1] . '"]';
 //system_usage
 
 $q1 = "select date_format(updated_dt,'%H:%i'),cpu_percent,mem_percent from naanal.cpu_mem_usage order by updated_dt desc limit 10;";
-$q2 =  "select count(cpu_percent) from naanal.cpu_mem_usage;";
+$q2 = "select count(cpu_percent) from naanal.cpu_mem_usage;";
 $rowc = mysql_result(mysql_query($q2), 0);
 
-if($rowc>0){
+if ($rowc > 0) {
 
-$result = mysql_query($q1, $con2);
-$labels = '"labels":[';
-$data_set1 = '"data1":[';
-$data_set2 = '"data2":[';
-while ($select_row = mysql_fetch_array($result)) {
-	$labels = $labels . '"' . $select_row[0] . '" ,';
-	$data_set1 = $data_set1 . $select_row[1] . ',';
-	$data_set2 = $data_set2 . $select_row[2] . ',';
+	$result = mysql_query($q1, $con2);
+	$labels = '"labels":[';
+	$data_set1 = '"data1":[';
+	$data_set2 = '"data2":[';
+	while ($select_row = mysql_fetch_array($result)) {
+		$labels = $labels . '"' . $select_row[0] . '" ,';
+		$data_set1 = $data_set1 . $select_row[1] . ',';
+		$data_set2 = $data_set2 . $select_row[2] . ',';
 
-}
-$labels = substr($labels, 0, -1);
-$data_set1 = substr($data_set1, 0, -1);
-$data_set2 = substr($data_set2, 0, -1);
-$labels = $labels . "]";
-$data_set1 = $data_set1 . "]";
-$data_set2 = $data_set2 . "]";
-}
-else{
-$labels = '"labels":["No Values"]';
-$data_set1 = '"data1":[0]';
-$data_set2 = '"data2":[0]';
-	
+	}
+	$labels = substr($labels, 0, -1);
+	$data_set1 = substr($data_set1, 0, -1);
+	$data_set2 = substr($data_set2, 0, -1);
+	$labels = $labels . "]";
+	$data_set1 = $data_set1 . "]";
+	$data_set2 = $data_set2 . "]";
+} else {
+	$labels = '"labels":["No Values"]';
+	$data_set1 = '"data1":[0]';
+	$data_set2 = '"data2":[0]';
+
 }
 //Instances
 
