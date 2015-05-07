@@ -1,7 +1,7 @@
 #!/bin/bash
 openstack_host=192.168.1.230
 
- sshpass -p 'password' ssh $openstack_host -l root -o StrictHostKeyChecking=no "at -f /opt/naanal/controller/scripts/remote/vm_shut.sh now"
+sshpass -p 'password' ssh $openstack_host -l root -o StrictHostKeyChecking=no "at -f /opt/naanal/controller/scripts/remote/vm_shut.sh now"
 
 
 backup_dir="/media/external/backup/mysql"
@@ -23,10 +23,14 @@ mkdir ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/etc/nova ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/etc/glance ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/etc/keystone ${filename}
+sshpass -p "password" scp -r root@${openstack_host}:/etc/neutron ${filename}
+sshpass -p "password" scp -r root@${openstack_host}:/etc/cinder ${filename}
 filename="${backup_dir}/lib"
 mkdir ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/var/lib/nova ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/var/lib/glance ${filename}
 sshpass -p "password" scp -r root@${openstack_host}:/var/lib/keystone ${filename}
+sshpass -p "password" scp -r root@${openstack_host}:/var/lib/neutron ${filename}
+sshpass -p "password" scp -r root@${openstack_host}:/var/lib/cinder ${filename}
 
 
