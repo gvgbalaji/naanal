@@ -1,5 +1,6 @@
 <?php
 include 'arrays.inc';
+include 'zmq_fn.php'
 require ("loginproc.php");
 require ("blockadmin.php");
 
@@ -29,9 +30,12 @@ if ($fn == "start") {
 	$pow_state = mysql_result($query, 0, 0);
 	$id = mysql_result($query, 0, 1);
 	if ($pow_state == 1) {
-		$cmd = "sudo virsh shutdown --mode acpi instance-" . substr("00000000" . dechex($id), -8);
+		$cmd = "sudo virsh shutdown instance-" . substr("00000000" . dechex($id), -8);
 		//echo $cmd;
-		exec($cmd);
+		//exec($cmd);
+		$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
+		$out = zmq_exec($arr1);
+		
 	}
 
 } elseif ($fn == "reboot") {
