@@ -16,10 +16,16 @@ if (!(mysql_num_rows($login) == 1)) {
 
 		//exec("sudo ./host_shut.sh $fn", $out, $res);
 		//$rep = print_r($out);
+		//$cmd = "sudo /opt/naanal/controller/scripts/remote/host_shut.sh $fn";
 		$arr1 = array('fn' => 'power', 'sub_fn' => $fn);
 		$out = zmq_exec($arr1);
 
 		$rep = "System Will $fn in a minute";
+		$key = 1;
+	} elseif ($fn == "backup") {
+		exec("sudo at -f /opt/naanal/manager/scripts/backup.sh now", $out, $res);
+
+		$rep = "System $fn Will Start in a minute";
 		$key = 1;
 	}
 

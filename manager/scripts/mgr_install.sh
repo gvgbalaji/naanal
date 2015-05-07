@@ -9,7 +9,7 @@ fi
 apt-get update
 
 
-apt-get install vim ntp dos2unix git openssh-server -y
+apt-get install -y  vim ntp dos2unix git openssh-server sshpass
 
 apt-get install -y python-keystoneclient python-glanceclient python-novaclient python-neutronclient python-ceilometerclient python-cinderclient 
 

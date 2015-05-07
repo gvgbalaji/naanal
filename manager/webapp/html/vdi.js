@@ -1353,6 +1353,44 @@ function host_restart() {
 
 }
 
+function host_backup() {
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+
+	}
+
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+			document.getElementById("host_table").innerHTML = xhr.responseText;
+
+			$("#host").dialog({
+				resizable : false,
+				height : 300,
+				width : 500,
+				modal : true,
+				buttons : {
+					"OK" : function() {
+						auth("backup", this);
+					},
+					Cancel : function() {
+						$(this).dialog("close");
+
+					}
+				}
+			});
+
+		}
+	};
+	xhr.open("GET", "host_shutdown.php", true);
+	xhr.send();
+
+}
+
+
 function auth(fn, obj) {
 	user = document.getElementById("username").value;
 	pass = document.getElementById("password").value;

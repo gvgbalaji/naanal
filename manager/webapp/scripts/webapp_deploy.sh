@@ -9,7 +9,7 @@ fi
 
 WEBAPP=/opt/naanal/manager/webapp
 
-
+cp -f $WEBAPP/conf/sudoers /etc/
 cp $WEBAPP/conf/php.ini /etc/php5/apache2/
 cp $WEBAPP/conf/apache2.conf /etc/apache2/
 cp $WEBAPP/conf/000-default.conf /etc/apache2/sites-available/
