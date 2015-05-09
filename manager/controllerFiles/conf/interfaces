@@ -1,0 +1,41 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+#auto port-mgmt
+#iface port-mgmt inet static
+#address 1.1.1.1
+#netmask 255.255.255.0
+
+auto port-wan
+iface port-wan inet manual
+up ifconfig port-wan up
+
+auto port-lan0
+iface port-lan0 inet manual
+up ifconfig port-lan0 up
+
+#auto port-lan1
+#iface port-lan1 inet manual
+#up ifconfig port-lan1 up
+
+#auto port-lan2
+#iface port-lan2 inet manual
+#up ifconfig port-lan2 up
+
+#auto port-lan3
+#iface port-lan3 inet manual
+#up ifconfig port-lan3 up
+
+auto br-wan
+iface br-wan inet static
+address 192.168.1.230
+netmask 255.255.255.0
+gateway 192.168.1.1
+dns-nameservers 8.8.8.8
+
+
