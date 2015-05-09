@@ -1,7 +1,0 @@
-#SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:01:00.0", NAME="port-mgmt"
-#SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:02:00.0", NAME="port-wan"
-SUBSYSTEM=="net", ACTION=="add", KERNEL=="p3p1", NAME="port-wan"
-SUBSYSTEM=="net", ACTION=="add", KERNEL=="wlan0", NAME="port-lan0"
-#SUBSYSTEM=="net", ACTION=="add", KERNEL=="eth2", NAME="port-lan2"
-#SUBSYSTEM=="net", ACTION=="add", KERNEL=="eth3", NAME="port-lan3"
-
