@@ -10,7 +10,7 @@ fi
 #read -p "Enter the device name for this rig's NIC (eth0, etc.) : " ext_nic
 #ext_nic=em1
 ext_nic=br-wan
-ext_ip=$(/sbin/ifconfig $ext_nic| sed -n 's/.*inet *addr:\([0-9\.]*\).*/\1/p')
+ext_ip=EXT_IP_ADDR
 password=password
 mysql_passwd=password
 email=contact@naanalnetworks.com
@@ -209,6 +209,9 @@ keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / 
 keystone service-create --name=cinderv2 --type=volumev2 --description="OpenStack Block Storage v2"
 
 keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://$ext_ip:8776/v2/%\(tenant_id\)s --internalurl=http://$ext_ip:8776/v2/%\(tenant_id\)s --adminurl=http://$ext_ip:8776/v2/%\(tenant_id\)s
+
+pvcreate SECONDARY_HD
+vgcreate cinder-volumes SECONDARY_HD
 
 service cinder-scheduler restart 
 service cinder-api restart

@@ -10,8 +10,8 @@ source /opt/naanal/controller/env/setuprc
 /opt/naanal/controller/scripts/openstack_reset_topology.sh
 
 wan_nic=br-wan
-wan_ip=$(/sbin/ifconfig $wan_nic| sed -n 's/.*inet *addr:\([0-9\.]*\).*/\1/p' | cut -d '.' -f 1,2,3)
-lan_ip=10.0.0
+wan_ip=$(echo EXT_IP_ADDR | cut -d"." -f1-3)
+lan_ip=$(echo LAN_SUBNET | cut -d"." -f1-3)
 
 nova quota-class-update --instances 60 default
 nova quota-class-update --cores 120 default
