@@ -116,7 +116,6 @@ function instancessql(addel, ins_nm, sub_addel) {
 		xhr1.onreadystatechange = function() {
 			var checkboxes = document.getElementsByName('group');
 			var chkVal = "(";
-
 			if (xhr1.readyState == 4 && xhr1.status == 200) {
 				for (var i = 0; i < checkboxes.length; i++) {
 					if (checkboxes[i].checked) {
@@ -1390,7 +1389,6 @@ function host_backup() {
 
 }
 
-
 function auth(fn, obj) {
 	user = document.getElementById("username").value;
 	pass = document.getElementById("password").value;
@@ -1590,5 +1588,73 @@ function useradd(addel, s, t, u, v, w) {
 	xhr.open("GET", "useradd.php", true);
 	xhr.send();
 
+}
+
+//configuration
+
+function configadd() {
+
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			document.getElementById("table").innerHTML = xhr.responseText;
+		}
+	}
+
+	xhr.open("GET", "config.php", true);
+	xhr.send();
+}
+
+function configsql(addel) {
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+		var xhr1 = new XMLHttpRequest();
+
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+		var xhr1 = new ActiveXObject("Microsoft.XMLHTTP");
+
+	}
+
+	if (addel == "add") {
+		var fields = document.getElementsByClassName("group1");
+		var arr = {};
+
+		for ( i = 0; i < fields.length; i++) {
+			arr[fields[i].getAttribute('id')] = fields[i].value;
+		}
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				xhr1.onreadystatechange = function() {
+					if (xhr1.readyState == 4 && xhr1.status == 200) {
+
+						document.getElementById("table").innerHTML = xhr1.responseText;
+
+					}
+				}
+				xhr1.open("GET", "system.php", true);
+				xhr1.send();
+
+			}
+		}
+		uri = "configsql.php?arr=" + JSON.stringify(arr);
+		xhr.open("GET", uri, true);
+		xhr.send();
+	} else {
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+
+				document.getElementById("table").innerHTML = xhr.responseText;
+
+			}
+		}
+		xhr.open("GET", "system.php", true);
+		xhr.send();
+	}
 }
 

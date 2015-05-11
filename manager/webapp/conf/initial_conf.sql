@@ -1,0 +1,1 @@
+create table naanal.initial_configuration(field_name char(100),field_id char(100) primary key,value char(100),editable bool);
