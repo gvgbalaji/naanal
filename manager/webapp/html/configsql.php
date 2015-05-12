@@ -2,7 +2,7 @@
 require 'loginproc.php';
 include 'arrays.inc';
 
-$fl = fopen("confrc.sh", "w") or die("Unable to open file!");
+$fl = fopen("conf/confrc.sh", "w") or die("Unable to open file!");
 $txt = "";
 $arr = json_decode($_GET['arr']);
 foreach ($arr as $key => $val) {

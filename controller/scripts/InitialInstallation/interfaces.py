@@ -4,6 +4,7 @@ import MySQLdb
 import psutil
 import os
 import re
+import zmq
 
 tableNM="initial_configuration"
 userNM="root"
@@ -50,8 +51,11 @@ secondary_drive=secondary_drive+"'"
 mysql_exec="update " + tableNM + " set value=" + secondary_drive+ " where field_id='SECONDARY_HD'"
 cursor.execute(mysql_exec)
 
-
-
+soc=zmq.Context().socket(zmq.REP)
+soc.bind("tcp://0.0.0.0:6666")
+msg=soc.recv_unicode()
+soc.send_unicode(msg)
+soc.close()
 
 cursor.close()
 conn.commit()

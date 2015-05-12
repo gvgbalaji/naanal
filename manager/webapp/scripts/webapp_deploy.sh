@@ -21,6 +21,9 @@ cp -rf $WEBAPP/js /var/www/html/
 mkdir /var/www/html/rdp
 cp -f $WEBAPP/conf/template.rdp /var/www/html/rdp/
 
+mkdir /var/www/html/conf
+chown www-data /var/www/html/conf
+
 chmod a+x -R /var/www/html/
 #chmod 777 -R /opt/naanal/images
 chmod -R 777  /var/www/html/rdp/
