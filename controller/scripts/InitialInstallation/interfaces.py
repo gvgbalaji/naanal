@@ -5,27 +5,30 @@ import psutil
 import os
 import re
 
-tableNM="initialconfig"
+tableNM="initial_configuration"
 userNM="root"
 passwrd="password"
-hostIp="192.168.204.168"
+hostIp="192.168.204.137"
 dbName="naanal"
 conn=MySQLdb.connect(hostIp,userNM,passwrd,dbName)
+openstack_ip="192.168.204.135"
 cursor=conn.cursor()
-Wan= "'" + commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 192.168.204.168 | cut -d' ' -f1") +"'"
-mysql_exec="update " + tableNM + " set paramValue=" + Wan + " where paramNM='WAN'"
+Wan= "'" + commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 192.168.204.135 | cut -d' ' -f1") +"'"
+print Wan
+mysql_exec="update " + tableNM + " set value=" + Wan + " where field_id='WAN_NM'"
 cursor.execute(mysql_exec)
 
-Lan= "'" +  commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 'eth0\|wlan'  | cut -d' ' -f1") +"'"
-mysql_exec="update " + tableNM + " set paramValue=" + Lan + " where paramNM='LAN'"
+Lan= "'" +  commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 'eth0\|wlan\|eth1'  | cut -d' ' -f1") +"'"
+print Lan
+mysql_exec="update " + tableNM + " set value=" + Lan + " where field_id='LAN_NM'"
 cursor.execute(mysql_exec)
 
 cpu_cores="'" + str(psutil.NUM_CPUS) +"'"  # psutil.cpu_count() - in newer versions
-mysql_exec="update " + tableNM + " set paramValue=" + cpu_cores + " where paramNM='CPU_CORES'"
+mysql_exec="update " + tableNM + " set value=" + cpu_cores + " where field_id='CPU_CORES'"
 cursor.execute(mysql_exec)
 
 RAM="'" + str(psutil.virtual_memory().total/(1000000000)) +"'"
-mysql_exec="update " + tableNM + " set paramValue=" + RAM + " where paramNM='TOTAL_RAM'"
+mysql_exec="update " + tableNM + " set value=" + RAM + " where field_id='TOTAL_RAM'"
 cursor.execute(mysql_exec)
 
 secondary_drive="'"
@@ -44,7 +47,7 @@ if not(sdd_drive==""):
 
 
 secondary_drive=secondary_drive+"'"
-mysql_exec="update " + tableNM + " set paramValue=" + secondary_drive+ " where paramNM='HARD_DRIVES'"
+mysql_exec="update " + tableNM + " set value=" + secondary_drive+ " where field_id='SECONDARY_HD'"
 cursor.execute(mysql_exec)
 
 
