@@ -51,8 +51,8 @@ function rdp_fn($action, $nm, $ip, $user = "root") {
 }
 
 function instanceadd() {
-	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $net_id, $flt_ip, $max_count, $autostart, $con;
-
+	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $flt_ip, $max_count, $autostart, $con , $con2;
+	$net_id = mysql_result(mysql_query("SELECT id  FROM neutron.networks where name='lan-net'", $con2), 0, 0);
 	$cmd1 = "nova $auth_cmd boot  --image $img_nm --flavor $flv_nm --security-groups $sec_grp --nic net-id=$net_id   $server";
 	//echo $cmd1, $autostart;
 	exec($cmd1);
