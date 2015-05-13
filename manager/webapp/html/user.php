@@ -8,7 +8,7 @@
 		$user = $_SESSION['username'];
 		$auth_cmd = $_SESSION['auth_cmd'];
 
-		$ser = mysql_result(mysql_query("select instance from naanal.user where username='$user'", $con2), 0, 0);
+		$ser = mysql_result(mysql_query("select instance from naanal.user where username='$user'", $con), 0, 0);
 
 		$cmd = "nova $auth_cmd get-vnc-console $ser novnc | awk '{split($4,a,\"Url\");print a[1] }' | awk '/http/'";
 		exec($cmd, $output, $result);

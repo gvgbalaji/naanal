@@ -20,11 +20,11 @@ $ut = '"ut" :["' . $output[1] . '"]';
 
 $q1 = "select date_format(updated_dt,'%H:%i'),cpu_percent,mem_percent from naanal.cpu_mem_usage order by updated_dt desc limit 10;";
 $q2 = "select count(cpu_percent) from naanal.cpu_mem_usage;";
-$rowc = mysql_result(mysql_query($q2), 0);
+$rowc = mysql_result(mysql_query($q2,$con), 0);
 
 if ($rowc > 0) {
 
-	$result = mysql_query($q1, $con2);
+	$result = mysql_query($q1, $con);
 	$labels = '"labels":[';
 	$data_set1 = '"data1":[';
 	$data_set2 = '"data2":[';

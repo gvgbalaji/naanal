@@ -5,7 +5,7 @@
 		require 'loginproc.php';
 
 		$q = "select * from initial_configuration order by editable asc";
-		$result = mysql_query($q, $con2);
+		$result = mysql_query($q, $con);
 		$enable = array("disabled", "");
 		?>
 	</head>
@@ -28,6 +28,7 @@
 					<td class="leftd"></td>
 					<td>
 					<input type="submit" value="OK"  id="add_button" class="addel-button"/>
+					<input type="button" value="Push Settings" onclick="push_set()" class="addel-button" />
 					<input type="button" value="CANCEL" onclick='configsql()' class="addel-button"/>
 					</td>
 				</tr>

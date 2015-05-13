@@ -5,7 +5,7 @@ include 'zmq_fn.php';
 $fn = $_GET['fn'];
 $username = $_GET['username'];
 $password = $_GET['password'];
-$login = mysql_query("SELECT * FROM naanal.user WHERE (username = '" . mysql_real_escape_string($username) . "') and (password = '" . mysql_real_escape_string(md5($password)) . "')", $con2);
+$login = mysql_query("SELECT * FROM naanal.user WHERE (username = '" . mysql_real_escape_string($username) . "') and (password = '" . mysql_real_escape_string(md5($password)) . "')", $con);
 $key = 0;
 $admin_flag = mysql_result($login, 0, 4);
 if (!(mysql_num_rows($login) == 1)) {

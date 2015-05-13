@@ -33,7 +33,7 @@ if ($fn == 'add') {
 	//echo $cmd;
 
 	$query = "select username from naanal.user where instance='$server'";
-	$result = mysql_query($query, $con2);
+	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
 		rdp_fn("add", $row[0], '');
 	}
@@ -44,7 +44,7 @@ if ($fn == 'add') {
 	//echo $cmd;
 
 	$query = "select username from naanal.user where instance='$server'";
-	$result = mysql_query($query, $con2);
+	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
 		rdp_fn("add", $row[0], $flt_ip);
 	}
@@ -105,5 +105,5 @@ while ($row = mysql_fetch_array($result)) {
 	echo "</td><td><button title='Delete' class='vdi_btn' id='ip_del' onclick='delconf(floatingipsql,\"del\",\"$row[0]\",\"\",\"$limit\",\"$offset\")'><img class='vdi_btn_img' src='images/delete.ico'/></button></td></tr>";
 }
 echo "</table>";
-mysql_close($con);
+mysql_close($con2);
 ?>

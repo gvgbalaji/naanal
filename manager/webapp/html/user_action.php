@@ -1,6 +1,5 @@
 <?php
 include 'arrays.inc';
-include 'zmq_fn.php'
 require ("loginproc.php");
 require ("blockadmin.php");
 
@@ -8,7 +7,7 @@ $user = $_SESSION['username'];
 $auth_cmd = $_SESSION['auth_cmd'];
 $fn = $_GET['fn'];
 $ins = $_GET['ins'];
-$ser = mysql_result(mysql_query("select instance from naanal.user where username='$user'", $con2), 0, 0);
+$ser = mysql_result(mysql_query("select instance from naanal.user where username='$user'", $con), 0, 0);
 
 if ($fn == "start") {
 	$q = "select power_state from nova.instances where display_name='$ser' and deleted=0";
@@ -30,12 +29,9 @@ if ($fn == "start") {
 	$pow_state = mysql_result($query, 0, 0);
 	$id = mysql_result($query, 0, 1);
 	if ($pow_state == 1) {
-		$cmd = "sudo virsh shutdown instance-" . substr("00000000" . dechex($id), -8);
+		$cmd = "sudo virsh shutdown --mode acpi instance-" . substr("00000000" . dechex($id), -8);
 		//echo $cmd;
-		//exec($cmd);
-		$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
-		$out = zmq_exec($arr1);
-		
+		exec($cmd);
 	}
 
 } elseif ($fn == "reboot") {

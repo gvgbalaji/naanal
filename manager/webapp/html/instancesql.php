@@ -51,7 +51,7 @@ function rdp_fn($action, $nm, $ip, $user = "root") {
 }
 
 function instanceadd() {
-	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $net_id, $flt_ip, $max_count, $autostart, $con2;
+	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $net_id, $flt_ip, $max_count, $autostart, $con;
 
 	$cmd1 = "nova $auth_cmd boot  --image $img_nm --flavor $flv_nm --security-groups $sec_grp --nic net-id=$net_id   $server";
 	//echo $cmd1, $autostart;
@@ -59,7 +59,7 @@ function instanceadd() {
 
 	$autoq = "insert into naanal.custom_setting(instance,autostart) values('$server',$autostart)";
 	//echo $autoq;
-	mysql_query($autoq, $con2);
+	mysql_query($autoq, $con);
 
 	if ($flt_ip != 'none') {
 		$cmd2 = "nova $auth_cmd floating-ip-associate $server $flt_ip";
@@ -69,20 +69,20 @@ function instanceadd() {
 }
 
 function instancedel($ser) {
-	global $auth_cmd, $con2;
+	global $auth_cmd, $con;
 
 	$cmd1 = "nova $auth_cmd delete $ser";
 	//echo $cmd1;
 	exec($cmd1);
 
 	$query = "select username from naanal.user where instance='$ser'";
-	$result = mysql_query($query, $con2);
+	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
 		rdp_fn("delete", $row[0]);
 	}
 
 	$autoq = "delete from naanal.custom_setting where instance='$ser'";
-	mysql_query($autoq, $con2);
+	mysql_query($autoq, $con);
 
 }
 
@@ -109,7 +109,7 @@ function floatip_associate() {
 	}
 
 	$query = "select username from naanal.user where instance='$server'";
-	$result = mysql_query($query, $con2);
+	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
 		rdp_fn("add", $row[0], $flt_ip);
 	}
@@ -213,7 +213,7 @@ if ($sub_fn == 'activity') {
 		floatip_associate();
 	} elseif ($fn == 'resize') {
 		$autoq = "update  naanal.custom_setting set autostart=$autostart where instance='$server'";
-		mysql_query($autoq, $con2);
+		mysql_query($autoq, $con);
 		if ($server != $org_ins_nm) {
 			$cmd1 = "nova $auth_cmd rename $org_ins_nm $server";
 			//echo $cmd1;
@@ -257,7 +257,7 @@ if ($sub_fn == 'activity') {
 
 //<select id='num_users' name='num_users' onchange='instancessql(\"\",\"\",\"\",this.value)'><option value='1' id='1'>1</option><option value='2' id='2' selected>2</option><option value='10' id='10' selected>10</option>
 
-$q1 = "SELECT display_name,(select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ),(select ip_address from neutron.ipallocations where port_id = (select id  from neutron.ports where device_id =uuid ) ),power_state,vm_state,task_state,memory_mb,root_gb,instance_type_id,(select autostart from naanal.custom_setting where instance=display_name) FROM nova.instances where vm_state!='deleted' and deleted=0 order by memory_mb limit $offset,$limit";
+$q1 = "SELECT display_name,(select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ),(select ip_address from neutron.ipallocations where port_id = (select id  from neutron.ports where device_id =uuid ) ),power_state,vm_state,task_state,memory_mb,root_gb,instance_type_id FROM nova.instances where vm_state!='deleted' and deleted=0 order by memory_mb limit $offset,$limit";
 echo "<input type='button' class='addel-button' value='Add' onclick='instanceadd()'/>&nbsp;&nbsp;<input type='button' class='addel-button' onclick='delconf(instancessql,\"del1\",\"\",\"\",\"$limit\",\"$offset\")' value='Delete'/>&nbsp;&nbsp;<input type='button' class='addel-button' onclick='action(\"start1\",\"\",\"$limit\",\"$offset\")' value='Start'/>&nbsp;&nbsp;<input type='button' class='addel-button' onclick='action(\"stop1\",\"\",\"$limit\",\"$offset\")' value='Stop'/>&nbsp;Records Per Page&nbsp<select id='num_users' class='clear-ins' name='num_users' onchange='inslimit(this.value)'>";
 foreach ($num_ins as $num) {
 	echo "<option value='$num' id=$num>$num</option>";
@@ -322,9 +322,11 @@ while ($row = mysql_fetch_array($result)) {
 
 	$row[5] = lcfirst($row[5]);
 
+	$astrt = mysql_result(mysql_query("select autostart from naanal.custom_setting where instance='$row[0]';",$con),0,0);
+	
 	$autostart_text = "Disabled";
 
-	if ($row[9] == 1) {
+	if ($astrt == 1) {
 		$autostart_text = "Enabled";
 	}
 

@@ -1642,7 +1642,32 @@ function configsql(addel) {
 
 			}
 		}
-		uri = "configsql.php?arr=" + JSON.stringify(arr);
+		uri = "configsql.php?fn=add&arr=" + JSON.stringify(arr);
+		xhr.open("GET", uri, true);
+		xhr.send();
+	} else if (addel == "push") {
+
+		var fields = document.getElementsByClassName("group1");
+		var arr = {};
+
+		for ( i = 0; i < fields.length; i++) {
+			arr[fields[i].getAttribute('id')] = fields[i].value;
+		}
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				xhr1.onreadystatechange = function() {
+					if (xhr1.readyState == 4 && xhr1.status == 200) {
+
+						document.getElementById("table").innerHTML = xhr1.responseText;
+					}
+				}
+				xhr1.open("GET", "system.php", true);
+				xhr1.send();
+
+			}
+		}
+		uri = "configsql.php?fn=push&arr=" + JSON.stringify(arr);
 		xhr.open("GET", uri, true);
 		xhr.send();
 	} else {
@@ -1658,3 +1683,10 @@ function configsql(addel) {
 	}
 }
 
+function push_set() {
+	id = document.getElementById("configform");
+	id.action = "javascript:configsql('push')";
+	$("#add_button").click();
+	id.action = "javascript:configsql('add')";
+	
+}
