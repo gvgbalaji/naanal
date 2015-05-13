@@ -9,19 +9,35 @@ import zmq
 tableNM="initial_configuration"
 userNM="root"
 passwrd="password"
-hostIp="192.168.204.137" #manager IP
+hostIp="192.168.204.137"
 dbName="naanal"
 conn=MySQLdb.connect(hostIp,userNM,passwrd,dbName)
-openstack_ip="192.168.1.230"
+openstack_ip="192.168.204.135"
 cursor=conn.cursor()
+
+mysql_exec = "drop table naanal."+tableNM+";"
+cursor.execute(mysql_exec)
+mysql_exec ="create table naanal.initial_configuration(field_name char(100),field_id char(100) primary key,value char(100),editable bool);"
+cursor.execute(mysql_exec)
+mysql_exec="""insert into naanal.initial_configuration values('Openstack IP','EXT_IP_ADDR','192.168.1.230',1),
+('LAN IP','LAN_SUBNET','10.0.0.0',1),
+('WAN Interface Name','WAN_NM','eth0',1),
+('LAN Interface Name','LAN_NM','eth1',1),
+('WAN Gateway','WAN_GATEWAY','192.168.1.1',1),
+('DNS Nameserver','DNS_NAMESERVER','8.8.8.8',1),
+('Secondary Drives','SECONDARY_HD','/dev/sdb  /dev/sdc',1),
+('Number of CPUs','CPU_CORES','2',1),
+('Total RAM','TOTAL_RAM','8',1);"""
+cursor.execute(mysql_exec)
+
 Wan= "'" + commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 192.168.204.135 | cut -d' ' -f1") +"'"
 print Wan
-mysql_exec="update " + tableNM + " set value=" + Wan + " where field_id='WAN_NM'"
+mysql_exec="update " + tableNM + " set value=" + Wan + " where field_id='br-wan'"
 cursor.execute(mysql_exec)
 
 Lan= "'" +  commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 'eth0\|wlan\|eth1'  | cut -d' ' -f1") +"'"
 print Lan
-mysql_exec="update " + tableNM + " set value=" + Lan + " where field_id='LAN_NM'"
+mysql_exec="update " + tableNM + " set value=" + Lan + " where field_id='a'"
 cursor.execute(mysql_exec)
 
 cpu_cores="'" + str(psutil.NUM_CPUS) +"'"  # psutil.cpu_count() - in newer versions
@@ -48,7 +64,7 @@ if not(sdd_drive==""):
 
 
 secondary_drive=secondary_drive+"'"
-mysql_exec="update " + tableNM + " set value=" + secondary_drive+ " where field_id='SECONDARY_HD'"
+mysql_exec="update " + tableNM + " set value=" + secondary_drive+ " where field_id='/dev/sdb /dev/sdc'"
 cursor.execute(mysql_exec)
 
 soc=zmq.Context().socket(zmq.REP)
