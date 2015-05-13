@@ -13,7 +13,7 @@ apt-get install -y  vim ntp dos2unix git openssh-server sshpass
 
 apt-get install -y python-keystoneclient python-glanceclient python-novaclient python-neutronclient python-ceilometerclient python-cinderclient 
 
-apt-get install -y libapache2-mod-php5 php5-mysql php5-dev pkg-config php-pear
+apt-get install -y libapache2-mod-php5 php5-mysql php5-dev pkg-config php-pear mysql-server
 
 apt-get install -y openstack-dashboard 
 
