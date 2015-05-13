@@ -11,14 +11,8 @@
 #
 # By default this script does nothing.
 
-sleep 60
 
-/usr/bin/python /opt/naanal/controller/scripts/autostart.py || /bin/true
 
-/bin/sh /opt/naanal/controller/scripts/wan_rescue.sh &
-
-/usr/bin/python /opt/naanal/controller/scripts/remote/zmq_server.py || /bin/true
-
-fi
+/bin/sh /opt/naanal/controller_InitialSetup/InitialSetup.sh
 
 exit 0

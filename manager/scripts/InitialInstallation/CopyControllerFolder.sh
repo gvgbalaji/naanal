@@ -1,0 +1,1 @@
+sshpass -p "password" scp -r /opt/naanal/controller  root@EXT_IP_ADDR:/opt/naanal/

@@ -33,7 +33,7 @@ up ifconfig port-lan0 up
 
 auto br-wan
 iface br-wan inet static
-address NAANAL_EXT_IP
+address EXT_IP_ADDR
 netmask 255.255.255.0
 gateway WAN_GATEWAY
 dns-nameservers DNS_NAMESERVER

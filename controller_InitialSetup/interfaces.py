@@ -9,10 +9,10 @@ import zmq
 tableNM="initial_configuration"
 userNM="root"
 passwrd="password"
-hostIp="192.168.204.137"
+hostIp="192.168.204.137" #manager IP
 dbName="naanal"
 conn=MySQLdb.connect(hostIp,userNM,passwrd,dbName)
-openstack_ip="192.168.204.135"
+openstack_ip="192.168.1.230"
 cursor=conn.cursor()
 Wan= "'" + commands.getoutput("/sbin/ip -4 -o a | cut -d ' ' -f 2,7 | cut -d '/' -f1 | grep 192.168.204.135 | cut -d' ' -f1") +"'"
 print Wan
