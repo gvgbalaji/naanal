@@ -19,6 +19,8 @@ apt-get install -y openstack-dashboard
 
 apt-get install -y openvpn
 
+apt-get install -y python-zmq
+
 wget http://download.zeromq.org/zeromq-4.0.5.tar.gz 
 tar -xvzf zeromq-4.0.5.tar.gz
 cd zeromq-4.0.5
