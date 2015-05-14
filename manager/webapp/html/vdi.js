@@ -1410,10 +1410,21 @@ function auth(fn, obj) {
 				document.getElementById("password").value = "";
 
 			} else if (output.key == 1) {
-				setTimeout(function() {
-					$(obj).dialog("close");
-					$('#logout').click();
-				}, 5000);
+				if (fn == "reboot" || fn == "shutdown") {
+
+					setTimeout(function() {
+						$(obj).dialog("close");
+						$('#logout').click();
+					}, 5000);
+
+				} else {
+
+					setTimeout(function() {
+						$(obj).dialog("close");
+					}, 5000);
+
+				}
+
 			}
 
 		}
@@ -1645,31 +1656,6 @@ function configsql(addel) {
 		uri = "configsql.php?fn=add&arr=" + JSON.stringify(arr);
 		xhr.open("GET", uri, true);
 		xhr.send();
-	} else if (addel == "push") {
-
-		var fields = document.getElementsByClassName("group1");
-		var arr = {};
-
-		for ( i = 0; i < fields.length; i++) {
-			arr[fields[i].getAttribute('id')] = fields[i].value;
-		}
-
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				xhr1.onreadystatechange = function() {
-					if (xhr1.readyState == 4 && xhr1.status == 200) {
-
-						document.getElementById("table").innerHTML = xhr1.responseText;
-					}
-				}
-				xhr1.open("GET", "system.php", true);
-				xhr1.send();
-
-			}
-		}
-		uri = "configsql.php?fn=push&arr=" + JSON.stringify(arr);
-		xhr.open("GET", uri, true);
-		xhr.send();
 	} else {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
@@ -1683,10 +1669,82 @@ function configsql(addel) {
 	}
 }
 
-function push_set() {
-	id = document.getElementById("configform");
-	id.action = "javascript:configsql('push')";
-	$("#add_button").click();
-	id.action = "javascript:configsql('add')";
-	
+
+function host_push() {
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+
+	}
+
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+			document.getElementById("host_table").innerHTML = xhr.responseText;
+
+			$("#host").dialog({
+				resizable : false,
+				height : 300,
+				width : 500,
+				modal : true,
+				buttons : {
+					"OK" : function() {
+						auth_push("push", this);
+					},
+					Cancel : function() {
+						$(this).dialog("close");
+
+					}
+				}
+			});
+
+		}
+	};
+	xhr.open("GET", "host_shutdown.php", true);
+	xhr.send();
+
+}
+
+function auth_push(fn, obj) {
+	user = document.getElementById("username").value;
+	pass = document.getElementById("password").value;
+	var fields = document.getElementsByClassName("group1");
+	var arr = {};
+
+	for ( i = 0; i < fields.length; i++) {
+		arr[fields[i].getAttribute('id')] = fields[i].value;
+	}
+
+	url = "configsql.php?fn=" + fn + "&username=" + user + "&password=" + pass + "&arr=" + JSON.stringify(arr);
+	if (window.XMLHttpRequest) {
+		var xhr = new XMLHttpRequest();
+
+	} else {
+		var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+
+	}
+
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			output = JSON.parse(xhr.responseText);
+			document.getElementById("result").innerHTML = output.reply;
+			if (output.key == 0) {
+				document.getElementById("password").value = "";
+
+			} else if (output.key == 1) {
+
+				setTimeout(function() {
+					$(obj).dialog("close");
+					$("#cancel-button").click();
+				}, 2000);
+
+			}
+
+		}
+	};
+	xhr.open("GET", url, true);
+	xhr.send();
+
 }
