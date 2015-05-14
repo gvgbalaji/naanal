@@ -35,7 +35,7 @@ grep -rl LAN_SUBNET /opt/naanal/controller  | xargs sed -i "s@LAN_SUBNET@$lan_su
 #To place DNS NameServer
 dnsServerEntry=`grep  "DNS_NAMESERVER" confrc | cut -d"=" --complement -f1`
 echo $dnsServerEntry
-grep -rl DNS_NAMESERVER /opt/naanal/controller  | xargs sed -i "s@DNS_SERVER_ENTRY@$dnsServerEntry@g"
+grep -rl DNS_NAMESERVER /opt/naanal/controller  | xargs sed -i "s@DNS_NAMESERVER@$dnsServerEntry@g"
 
 #To place Secondary Drives
 secondaryHD=`grep  "SECONDARY_HD" confrc | cut -d"=" --complement -f1`
