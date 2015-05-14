@@ -27,7 +27,7 @@ if (!(mysql_num_rows($login) == 1)) {
 
 		$rep = "System $fn Will Start in a minute";
 		$key = 1;
-	}
+	} 
 
 } else {
 	$rep = "You don't have privilege to perform this task";

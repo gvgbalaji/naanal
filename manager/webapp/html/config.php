@@ -29,7 +29,7 @@
 					<td>
 					<input type="submit" value="OK"  id="add_button" class="addel-button"/>
 					<input type="button" value="Push Settings" onclick="push_set()" class="addel-button" />
-					<input type="button" value="CANCEL" onclick='configsql()' class="addel-button"/>
+					<input type="button" value="CANCEL" id="cancel-button" onclick='configsql()' class="addel-button"/>
 					</td>
 				</tr>
 
