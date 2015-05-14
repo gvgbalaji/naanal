@@ -9,13 +9,14 @@ fi
 echo "PART 4/4: Setting up Naanal Webapp "
 
 cd /opt/naanal/webapp/scripts && ./webapp_deploy.sh
+cp /opt/naanal/controller/setup/rc.local /etc/
 
 echo "INFO: Naanal  Controller ready !!!"
 echo "WARNING: System going to reboot. After reboot, start using the system"
 
 sleep 3;
 
-reboot
+#reboot
 
 exit
 

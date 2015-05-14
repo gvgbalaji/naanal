@@ -32,6 +32,7 @@ sudo ldconfig
 pecl install zmq-beta
 
 cd /opt/naanal/manager/webapp/scripts && ./webapp_deploy.sh
+cd /opt/naanal/manager/scripts/InitialInstallation && ./CopyController_InitialScripts.sh
 
 exit
 

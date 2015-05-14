@@ -15,7 +15,7 @@ echo "WARNING: System going to reboot. After reboot run ./controller_setup_part_
 
 sleep 3;
 
-reboot
+#reboot
 
 exit
 

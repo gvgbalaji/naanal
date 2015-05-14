@@ -30,13 +30,27 @@ CREATE TABLE naanal.user (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE naanal.tenant_ip (  id int(11) NOT NULL AUTO_INCREMENT,  tenant char(30) DEFAULT NULL,  app_nm char(30) DEFAULT NULL,  ip_addr char(30) DEFAULT NULL,  PRIMARY KEY (id)) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 insert into naanal.user values('admin',md5('password'),'Administrator','',1);
-insert into naanal.tenant_ip(tenant,app_nm,ip_addr) values('Administrator','squid','$ext_ip');
+insert into naanal.tenant_ip(tenant,app_nm,ip_addr) values('Administrator','squid','192.168.1.230');
 CREATE TABLE naanal.custom_setting (
   id int(11) NOT NULL AUTO_INCREMENT,
   instance char(50) NOT NULL DEFAULT '',
   autostart tinyint(1) DEFAULT NULL,
   PRIMARY KEY (id,instance)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+create table naanal.initial_configuration(field_name char(100),field_id char(100) primary key,value char(100),editable bool);
+insert into naanal.initial_configuration values('Openstack IP','EXT_IP_ADDR','192.168.1.230',1),
+('LAN IP','LAN_SUBNET','10.0.0.0',1),
+('WAN Interface Name','WAN_NM','eth0',1),
+('LAN Interface Name','LAN_NM','eth1',1),
+('WAN Gateway','WAN_GATEWAY','192.168.1.1',1),
+('DNS Nameserver','DNS_NAMESERVER','8.8.8.8',1),
+('Secondary Drives','SECONDARY_HD','/dev/sdb  /dev/sdc',1),
+('Number of CPUs','CPU_CORES','2',1),
+('Total RAM','TOTAL_RAM','8',1);
+
+
+
+
 grant all privileges on *.* to 'root'@'%' identified by 'password';
 grant all privileges on *.* to 'root'@'localhost' identified by 'password';
 EOF

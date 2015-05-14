@@ -50,7 +50,8 @@ cp ./temp/ceilometer.conf  /etc/ceilometer/
 cp ./temp/pipeline.yaml  /etc/ceilometer/
 cp ./temp/cinder.conf  /etc/cinder/
 cp ./temp/variables.py  /usr/lib/python2.7/
-cp ./temp/rc.local /etc/
+#moved this code to setup_4.sh script
+#cp ./temp/rc.local /etc/
 cp ./temp/sudoers /etc/sudoers
 
 rm -rf ./temp
