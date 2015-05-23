@@ -48,7 +48,7 @@ if ($fn == 'add') {
 			$cmd = "winexe -U Administrator%password //$flt_ip \"net user $login_nm $passwd /add\"";
 			//$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
 			//$out = zmq_exec($arr1);
-			echo $cmd;
+			//echo $cmd;
 		}
 	}
 } elseif ($fn == 'edit') {
