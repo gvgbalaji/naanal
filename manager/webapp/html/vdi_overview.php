@@ -3,121 +3,106 @@
 		<?php
 		require 'loginproc.php';
 		include 'arrays.inc';
-		include 'zmq_fn.php';
-
-		//exec(" df -h -BG --total | grep 'total' | awk '{print $2}' && nproc | awk '{print $0*$core_multiplier}' && vmstat -s  | grep 'total memory' | awk '{print $1/1000}'", $out, $res);
-
-		$cmd = " df -h -BG --total | grep 'total' | awk '{print $2}' && nproc | awk '{print $0*7.5}' && vmstat -s  | grep 'total memory' | awk '{print $1/1000}'";
-		$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
-		$out = zmq_exec($arr1);
-
-		$num_rows = mysql_result(mysql_query("select count(*) from nova.instances where deleted=0 and vm_state!='deleted'", $con2), 0);
-
-		$total_pages = ceil($num_rows / $vm_limit);
 		?>
 	</head>
 	<body >
-		<div id="vdi_summary" >
-			<div id="vdi_system_status" class="summarydiv">
-				<table  class="tb1" id="tb1">
-					<caption>
-						System Status
-					</caption>
-					<tr>
-						<td>System Time</td>
-						<td ><p id="dt" ></p></td>
-					</tr>
-					<tr>
-						<td>Started At</td><td><p id="st" ></p></td>
-					</tr>
-					<tr>
-						<td>Up Time</td><td><p id="ut" ></p></td>
-					</tr>
-					<tr>
-						<td>Active Instances/Total Instances</td><td><p id="ins" ></p></td>
-					</tr>
-					<tr>
-						<td>Allocated cores/Total Cores</td><td ><label id="core"></label> / <label id='core1'><?php echo $out[1]; ?></label></td>
-					</tr>
-					<tr>
-						<td>Allocated Memory/Total Memory</td><td><label id="mem" ></label> / <label id='mem1'><?php echo round($out[2]); ?></label> (MB)</td>
-					</tr>
-					<tr>
-						<td>Active Disk/Total Disk</td><td><label id="disk" ></label> / <label id='disk1'><?php echo str_replace("G", "", $out[0]); ?></label> (GB)</td>
-					</tr>
+		<div class="container">
+			<table data-ss-colspan='2' class="in_tbl">
+				<caption>
+					Controller Node
+				</caption>
 
-				</table>
+				<tr>
+					<th>Parameter</th><th>Value</th>
+				</tr>
+				<tr>
+					<td>Status</td><td id='host_status'></td>
+				</tr>
+				<tr>
+					<td>Server UP Duration</td><td id='host_up_duration'></td>
+				</tr>
+				<tr>
+					<td>CPU Usage</td><td id='host_cpu'></td>
+				</tr>
+				<tr>
+					<td>RAM Usage</td><td id='host_ram'></td>
+				</tr>
+				<tr>
+					<td>Free Disk Space</td><td id='host_disk'></td>
+				</tr>
+			</table>
 
-			</div>
+			<table data-ss-colspan='3' >
+				<caption>
+					Controller Utilization
+				</caption>
+				<tr>
+					<td><div id="chart"></div></td>
+				</tr>
+			</table>
 
-				<table  class="tb0">
-					<caption >
-						CPU (%)
-					</caption>
-					<tr>
-						<td>
-						<canvas id="vdi_cpuusage"  height=200px width=400px />
-						</td>
-					</tr>
-				</table>
-				<table  class="tb0">
-					<caption >
-						Memory (%)
-					</caption>
-					<tr>
-						<td>
-						<canvas id="vdi_memoryusage"  height=200px width=400px />
-						</td>
-					</tr>
-				</table>
-				<table class="tb0">
-						<tr><th>Instances (Active vs Shutdown)</th><th>Cores</th><th>Memory(MB)</th><th>Disk(GB)</th></tr>
-					
-					<tr id="vdi_charts_tr">
-						<td >
-							<canvas id="instance_chart" height=150px width=250px />
-						</td>
-						<td >
-							<canvas id="core_chart" height=150px width=250px />
-						</td>
-						<td >
-							<canvas id="mem_chart" height=150px width=250px />
-						</td>
-						<td >
-							<canvas id="disk_chart" height=150px width=250px />
-						</td>
-					</tr>
+			<table  data-ss-colspan='2' class="in_tbl" >
+				<caption>
+					VM Statistics
+				</caption>
+				<tr>
+					<th>Parameter</th><th>Value</th>
+				</tr>
 
-				</table>
-				<table  class="tb0">
-					<caption >
-						TOP VMs CPU (%)
-					</caption>
-					<tr>
-						<td>
-						<canvas id="vdi_vmusage"  height=200px width=400px />
-						</td>
-					</tr>
-				</table>
-				<table  class="tb0">
-					<caption >
-						ALL VMs CPU (%)
-					</caption>
-					
-					<tr>
-						<td class='leftd'><input type="button" onclick="next_prev('prev')" class="len_button" value="<" /></td>
-						<td class='midtd'>
-						<canvas id="vdi_all_vmusage"  height=200px width=400px />
-						</td>
-						<td class='rightd'><input type="button" onclick="next_prev('next')" class="len_button" value=">" /></td>
-					</tr>
-				</table>
-				<div>
-					<input type="hidden" id="vm_limit" value=<?php echo "'$vm_limit'"; ?> />
-					<input type="hidden" id="vm_offset" value=0 />
-					<input type="hidden" id="vm_tot_pages" value= <?php echo "'$total_pages'"; ?> />
-					<input type="hidden" id="vm_curr_page" value=1 />
-					
-				</div>
+				<tr>
+					<td>No. of VMs (Running/Stopped)</td><td id='vm_num'></td>
+				</tr>
+				<tr>
+					<td>No. of VMs with CPU Utilization > 80%</td><td id='vm_cpu'></td>
+				</tr>
+				<tr>
+					<td>No. of VMs with RAM Utilization >80%</td><td id='vm_ram'></td>
+				</tr>
+				<tr>
+					<td>No. of VMs with Disk(C:\) < 4GB</td><td id='vm_disk'></td>
+				</tr>
+				<tr>
+					<td>No. of VMs with Possible Network Issue</td><td id='vm_net'></td>
+				</tr>
+
+			</table>
+			<table data-ss-colspan="3">
+				<caption>
+					VM Utilization
+				</caption>
+				<tr>
+					<td><div id="chart2"></div></td>
+				</tr>
+			</table>
+
+			<table id="stopped_vm" data-ss-colspan="1">
+				<caption>
+					Stopped VMs
+				</caption>
+
+			</table>
+
+			<table id="high_ram" data-ss-colspan="1">
+				<caption>
+					High RAM Usage
+				</caption>
+
+			</table>
+
+			<table id="high_cpu" data-ss-colspan="1">
+				<caption>
+					High CPU Usage
+				</caption>
+
+			</table>
+
+			<table id="low_disk" data-ss-colspan="1">
+				<caption>
+					Low Disk Space
+				</caption>
+
+			</table>
+		</div>
+
 	</body>
 </html>

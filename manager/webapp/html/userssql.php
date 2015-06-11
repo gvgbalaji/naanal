@@ -43,11 +43,11 @@ if ($fn == 'add') {
 			$query = "SELECT (select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted'and deleted=0 and display_name='$ins_nm' ;";
 			$flt_ip = mysql_result(mysql_query($query, $con2), 0, 0);
 
-			rdp_fn("add", $login_nm, $flt_ip);
+			rdp_fn("add", $login_nm, $flt_ip,$login_nm);
 
 			$cmd = "winexe -U Administrator%password //$flt_ip \"net user $login_nm $passwd /add\"";
-			//$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
-			//$out = zmq_exec($arr1);
+			$arr1 = array('fn' => 'shell', 'cmd' => $cmd);
+			$out = zmq_exec($arr1);
 			//echo $cmd;
 		}
 	}
@@ -65,7 +65,7 @@ if ($fn == 'add') {
 		$query = "SELECT (select floating_ip_address from neutron.floatingips where fixed_port_id = (select id   from neutron.ports where device_id =uuid ) ) as ip FROM nova.instances where vm_state!='deleted'and deleted=0 and display_name='$ins_nm' ;";
 		$flt_ip = mysql_result(mysql_query($query, $con2), 0, 0);
 
-		rdp_fn("add", $login_nm, $flt_ip);
+		rdp_fn("add", $login_nm, $flt_ip,$login_nm);
 	}
 } elseif ($fn == 'del') {
 	$query = "delete from naanal.user where username='$login_nm';";

@@ -46,7 +46,7 @@ if ($fn == 'add') {
 	$query = "select username from naanal.user where instance='$server'";
 	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
-		rdp_fn("add", $row[0], $flt_ip);
+		rdp_fn("add", $row[0], $flt_ip,$row[0]);
 	}
 
 } elseif ($fn == 'del') {

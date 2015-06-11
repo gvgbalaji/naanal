@@ -51,7 +51,6 @@ function instancessql(addel, ins_nm, sub_addel) {
 	$(".nav-button").click(function() {
 		clearInterval(instance_int);
 	});
-
 	if (window.XMLHttpRequest) {
 		var xhr = new XMLHttpRequest();
 		var xhr1 = new XMLHttpRequest();
@@ -203,7 +202,7 @@ function instancessql(addel, ins_nm, sub_addel) {
 	}
 }
 
-function instanceadd(addel, a, b, c, d, e) {
+function instanceadd(addel, a, b, c, d) {
 	var instance_int = $("#instance_int").val();
 	clearInterval(instance_int);
 
@@ -247,6 +246,7 @@ function instanceadd(addel, a, b, c, d, e) {
 				} else {
 					$("#auto_start").prop("checked", false);
 				}
+				$('#ins_count_tr').hide();
 				document.getElementById("instanceform").action = "javascript:instancessql('add','','resize')";
 
 			}
@@ -682,6 +682,21 @@ function firewalladd(addel, a, b, c, d, e, f, g, h, i, j, k) {
 
 //Overview
 
+function pad0(input) {
+	return (input < 10 ? '0' : '') + input;
+}
+
+function time_fn() {
+	var x = new Date();
+	var d = pad0(x.getDate());
+	var M = pad0(x.getMonth() + 1);
+	var Y = x.getFullYear();
+	var h = pad0(x.getHours());
+	var m = pad0(x.getMinutes());
+	var s = pad0(x.getSeconds());
+	return d + '-' + M + '-' + Y + ' ' + h + ':' + m + ':' + s;
+}
+
 function overviewsql() {
 	if (window.XMLHttpRequest) {
 		var xhr = new XMLHttpRequest();
@@ -695,29 +710,28 @@ function overviewsql() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 
 			document.getElementById("table").innerHTML = xhr.responseText;
-			var a = parseInt(document.getElementById("core1").innerHTML);
-			var b = parseInt(document.getElementById("mem1").innerHTML);
-			var c = parseInt(document.getElementById("disk1").innerHTML);
 
 			$(document).ready(function() {
-				st = new Date();
-				st1 = st.toUTCString();
-				$('#dt').text(st1);
-				var rate = 1000;
 
-				var overview_int = setInterval(function() {
-
-					da1 = datetime();
-					vdi_summary_chart(a, b, c);
-					$('#dt').text(da1);
-				}, rate);
-
-				$(".nav-button").click(function() {
-					if (this != "javascript:overviewsql()") {
-						clearInterval(overview_int);
-					}
-
+				$(".container").shapeshift({
+					minColumns : 3,
+					enableDrag : true,
+					gutterX : 5,
+					align : "left",
+					enableResize : true,
+					autoHeight : true
 				});
+
+				vdi_controller_chart();
+				vdi_vm_chart();
+				var overview_int = setInterval(function() {
+					vdi_controller_chart();
+					vdi_vm_chart();
+				}, 30000);
+				$(".nav-button").click(function() {
+					clearInterval(overview_int);
+				});
+
 			});
 
 		}
@@ -727,11 +741,136 @@ function overviewsql() {
 
 }
 
-function vdi_summary_chart(a, b, c) {
-	var vm_offset = $("#vm_offset").val();
-	vm_offset = vm_offset.toString();
+//tr add
+function row_add(tbl_nm, cell_array) {
+	var table = document.getElementById(tbl_nm);
+	var row = table.insertRow(-1);
+	var cell_count = cell_array.length;
+	for ( i = 0; i < cell_count; i++) {
+		var cell = row.insertCell(i);
+		cell.innerHTML = cell_array[i];
 
-	url = "vdi_overview_chart.php?vm_offset=" + vm_offset;
+	}
+}
+
+function vdi_vm_chart() {
+	url1 = "vm_chart.php";
+	if (window.XMLHttpRequest) {
+		var xhr1 = new XMLHttpRequest();
+
+	} else {
+		var xhr1 = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xhr1.onreadystatechange = function() {
+		if (xhr1.readyState == 4 && xhr1.status == 200) {
+
+			chart_output1 = JSON.parse(xhr1.responseText);
+
+			details = chart_output1.details;
+
+			var v = details.running + " / " + details.stopped;
+			$("#vm_num").text(v);
+			$("#vm_cpu").text(details.critical_cpu);
+			$("#vm_ram").text(details.critical_ram);
+			$("#vm_disk").text(details.critical_disk);
+			$("#vm_net").text(details.critical_net);
+
+			$("#stopped_vm").html("<caption>Stopped VMs</caption>");
+			$("#high_ram").html("<caption>High RAM Usage</caption>");
+			$("#high_cpu").html("<caption>High CPU Usage</caption>");
+			$("#low_disk").html("<caption>Low Disk Space</caption>");
+
+			//stopped vms
+			for (vm in chart_output1.stpd_vm_array) {
+				row_add('stopped_vm', [chart_output1.stpd_vm_array[vm]]);
+			}
+
+			//high ram
+			for (vm in chart_output1.critical_ram_array) {
+				row_add('high_ram', [vm, chart_output1.critical_ram_array[vm]]);
+			}
+
+			//high cpu
+			for (vm in chart_output1.critical_cpu_array) {
+				row_add('high_cpu', [vm, chart_output1.critical_cpu_array[vm]]);
+			}
+
+			//low disk
+			for (vm in chart_output1.critical_disk_array) {
+
+				row_add('low_disk', [vm, chart_output1.critical_disk_array[vm]]);
+			}
+
+			$(".container").trigger("ss-rearrange");
+
+			var chart2 = c3.generate({
+				bindto : '#chart2',
+				data : {
+					x : 'x',
+					//columns : [['x', 'vm1', 'vm2', 'vm3', 'vm4', 'vm5', 'vm6'], ['RAM', 30, 20, 100, 40, 50, 25], ['CPU', 50, 20, 10, 40, 15, 25]],
+					json : {
+						x : chart_output1.vm_array,
+						RAM : chart_output1.ram_array,
+						CPU : chart_output1.cpu_array
+					},
+					type : 'bar'
+				},
+				axis : {
+					x : {
+						type : 'category', // this needed to load string x value
+						padding : {
+							left : 0,
+							right : 0
+						},
+						label : {
+							text : 'Time',
+							position : 'outer-right'
+						}
+					},
+					y : {
+						max : 100,
+						min : 0,
+						centre : 50,
+						padding : {
+							top : 0,
+							bottom : 0
+						},
+						label : {
+							text : 'Used %',
+							position : 'outer-left'
+						}
+					}
+				},
+				tooltip : {
+					format : {
+						title : function(v) {
+							return 'Used %'
+						},
+						value : function(v) {
+							return v + "%";
+						},
+					},
+					grouped : true
+				},
+				color : {
+					pattern : ['#1f77b4', '#2ca02c']
+				},
+				size : {
+					height : 200,
+					width : 350
+				}
+			});
+
+		}
+	}
+	xhr1.open("GET", url1, true);
+	xhr1.send();
+
+}
+
+function vdi_controller_chart() {
+	url = "controller_chart.php";
+
 	if (window.XMLHttpRequest) {
 		var xhr = new XMLHttpRequest();
 
@@ -741,124 +880,92 @@ function vdi_summary_chart(a, b, c) {
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
+
 			chart_output = JSON.parse(xhr.responseText);
+
+			details = chart_output.details;
+			$("#host_status").html(details.status);
+			$("#host_up_duration").html(details.uptime);
+			$("#host_cpu").html(details.cpu);
+			$("#host_ram").html(details.ram);
+			$("#host_disk").html(details.disk);
+
+			var chart = c3.generate({
+				bindto : '#chart',
+				data : {
+					x : 'x',
+					y : 'y',
+					xFormat : '%Y-%m-%d %H:%M:%S',
+					//xFormat : '%Y-%m-%d',
+					//columns : [['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06', '2013-01-07', '2013-01-08', '2013-01-09', '2013-01-10'], ['RAM', 30, 20, 40, 16, 50, 30, 20, 40, 15, 50], ['CPU', 13, 34, null, 2, 30, 13, 34, null, 2, 30]]
+					//columns : [['x', chart_output.CPU.cpu_time], ['RAM', chart_output.RAM.ram_usage], ['CPU', chart_output.CPU.cpu_usage]]
+					json : {
+						x : chart_output.CPU.cpu_time,
+						RAM : chart_output.RAM.ram_usage,
+						CPU : chart_output.CPU.cpu_usage
+					}
+				},
+				point : {
+					show : false
+				},
+				line : {
+					connectNull : true,
+					step : {
+						type : 'step-after'
+					}
+				},
+				tooltip : {
+					format : {
+						title : function(v) {
+							return 'Used %'
+						},
+						value : function(v) {
+							return v + "%";
+						},
+					},
+					grouped : true
+				},
+				axis : {
+					x : {
+						type : 'timeseries',
+						tick : {
+							format : '%H:%M'
+							//format : '%Y-%m-%d'
+						},
+						padding : {
+							left : 0,
+							right : 0
+						},
+						label : {
+							text : 'Time',
+							position : 'outer-right'
+						}
+					},
+					y : {
+
+						max : 100,
+						min : 0,
+						centre : 50,
+						padding : {
+							top : 0,
+							bottom : 0
+						},
+						label : {
+							text : 'Used %',
+							position : 'outer-left'
+						}
+					}
+				},
+				size : {
+					height : 200,
+					width : 350
+				}
+			});
+
 		}
 	}
 	xhr.open("GET", url, true);
 	xhr.send();
-
-	var vm_data = {
-		labels : chart_output.cpu_labels,
-		datasets : [{
-			label : "My First dataset",
-			fillColor : "rgba(65, 191, 250, 1)",
-			strokeColor : "rgba(220,220,220,0.8)",
-			highlightFill : "rgba(0, 146, 220, 0.9)",
-			highlightStroke : "rgba(220,220,220,1)",
-			data : chart_output.cpu_data
-		}]
-	}
-
-	var all_vm_data = {
-		labels : chart_output.all_cpu_labels,
-		datasets : [{
-			label : "My First dataset",
-			fillColor : "rgba(65, 191, 250, 1)",
-			strokeColor : "rgba(220,220,220,0.8)",
-			highlightFill : "rgba(0, 146, 220, 0.9)",
-			highlightStroke : "rgba(220,220,220,1)",
-			data : chart_output.all_cpu_data
-		}]
-	}
-
-	var data1 = {
-		labels : chart_output.labels,
-		datasets : [{
-			label : "My First dataset",
-			fillColor : "rgba(65, 191, 250, 1)",
-			strokeColor : "rgba(220,220,220,0.8)",
-			highlightFill : "rgba(0, 146, 220, 0.9)",
-			highlightStroke : "rgba(220,220,220,1)",
-			data : chart_output.data1
-		}]
-	}
-	var data2 = {
-		labels : chart_output.labels,
-		datasets : [{
-			label : "My First dataset",
-			fillColor : "rgba(65, 191, 250, 1)",
-			strokeColor : "rgba(220,220,220,0.8)",
-			highlightFill : "rgba(0, 146, 220, 0.9)",
-			highlightStroke : "rgba(220,220,220,1)",
-			data : chart_output.data2
-		}]
-	}
-
-	var data3 = chart_output.piedata;
-
-	var st = chart_output.st;
-	var ut = chart_output.ut;
-	var ins = chart_output.ins;
-	var core = parseInt(chart_output.core);
-	var mem = parseInt(chart_output.mem);
-	var disk = parseInt(chart_output.disk);
-
-	a = a - core;
-	b = b - mem;
-	c = c - disk;
-
-	var data4 = JSON.parse('[{"value" : ' + core + ', "color" : "#B40E06", "label" : "Allocated Cores"},{"value" : ' + a + ', "color" : "#41BFFA", "label" : "Available Cores"}]');
-	var data5 = JSON.parse('[{"value" : ' + mem + ', "color" : "#B40E06", "label" : " Allocated Memory"},{"value" : ' + b + ', "color" : "#41BFFA", "label" : "Available Memory"}]');
-	var data6 = JSON.parse('[{"value" : ' + disk + ', "color" : "#B40E06", "label" : "Allocated Disk"},{"value" : ' + c + ', "color" : "#41BFFA", "label" : "Available Disk"}]');
-
-	$("#st").text(st);
-	$("#ut").text(ut);
-	$("#ins").text(ins);
-	$("#core").text(core);
-	$("#mem").text(mem);
-	$("#disk").text(disk);
-
-	var cpuusage = document.getElementById('vdi_cpuusage').getContext('2d');
-	var chart1 = new Chart(cpuusage).Bar(data1, {
-
-		animation : false
-	});
-
-	var memoryusage = document.getElementById('vdi_memoryusage').getContext('2d');
-	var chart2 = new Chart(memoryusage).Bar(data2, {
-
-		animation : false
-	});
-
-	var instance_chart = document.getElementById('instance_chart').getContext('2d');
-	var chart3 = new Chart(instance_chart).Pie(data3, {
-		animation : false
-	});
-
-	var core_chart = document.getElementById('core_chart').getContext('2d');
-	var chart4 = new Chart(core_chart).Pie(data4, {
-		animation : false
-	});
-	var mem_chart = document.getElementById('mem_chart').getContext('2d');
-	var chart5 = new Chart(mem_chart).Pie(data5, {
-		animation : false
-	});
-	var disk_chart = document.getElementById('disk_chart').getContext('2d');
-	var chart6 = new Chart(disk_chart).Pie(data6, {
-		animation : false
-	});
-
-	var vmusage = document.getElementById('vdi_vmusage').getContext('2d');
-	var chart7 = new Chart(vmusage).Bar(vm_data, {
-
-		animation : false
-	});
-
-	var all_vmusage = document.getElementById('vdi_all_vmusage').getContext('2d');
-	var chart8 = new Chart(all_vmusage).Bar(all_vm_data, {
-
-		animation : false
-	});
 
 }
 
@@ -1668,7 +1775,6 @@ function configsql(addel) {
 		xhr.send();
 	}
 }
-
 
 function host_push() {
 	if (window.XMLHttpRequest) {

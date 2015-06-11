@@ -1,0 +1,60 @@
+.container {
+    position: relative;
+}
+.container  table {
+    width: 200px;
+    height: 220px;
+    position: absolute;
+}
+.container  table[data-ss-colspan='1'] {
+    width: 200px;
+    height: 50px;
+}
+.container  table[data-ss-colspan='2'] {
+    width: 300px;
+    height: 220px;
+}
+.container  table[data-ss-colspan='3'] {
+    width: 400px;
+    height: 220px;
+}
+
+
+.container .ss-placeholder-child {
+    background: transparent;
+    border: 1px dashed blue;
+}
+
+.container  table  tbody tr:nth-child(odd) {
+   background-color: #E9EDF4;
+}
+.container  table  tbody tr:nth-child(even) {
+   background-color: #D0D8E8;
+}
+
+.container  table  tbody  tr  td {
+   border: 2px solid white;
+    font-size: 15px;
+  font-weight: bold;
+}
+
+.container  table  tbody  tr  th {
+	background:#4F81BD;
+}
+
+.container table caption{
+	background: #3670B5;
+	padding-bottom: 2px;
+	height: 30px;
+	border: 1px solid  #bcdef4;
+	padding-right:10px;
+	padding-left:10px;
+	color:white;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+
+.chart{
+	width: 400px;
+	height: 200px;
+}

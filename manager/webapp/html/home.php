@@ -2,7 +2,6 @@
 	<head>
 		<?php
 		include 'arrays.inc';
-
 		require ("loginproc.php");
 		require ("blockuser.php");
 		?>
@@ -10,9 +9,10 @@
 		<script language="javascript" src="home.js"></script>
 		<script language="javascript" src="vdi.js"></script>
 		<script src="js/jquery.js" ></script>
-		<script src="js/Chart.js" ></script>
 		<script src="js/jquery-ui-1.11.1/jquery-ui.js"></script>
-
+		<script type="text/javascript" src="/js/shapeshift/jquery.shapeshift.min.js" ></script>
+		<script src="js/c3/d3.min.js" charset="utf-8"></script>
+		<script src="js/c3/c3.min.js"></script>
 		<script>
 			$(document).ready(function() {
 				$('#OVERVIEW').css({
@@ -46,6 +46,8 @@
 		<link rel="stylesheet" href="js/jquery-ui-1.11.1/jquery-ui.theme.css"/>
 		<link rel="stylesheet" href="js/jquery-ui-1.11.1/jquery-ui.structure.css"/>
 		<link rel="stylesheet" href="home.css"/>
+		<link href="js/shapeshift/styles.css" rel="stylesheet" type="text/css" />
+		<link href="js/c3/c3.min.css" rel="stylesheet" type="text/css">
 	</head>
 	<body onload="overviewsql()" >
 		<div>

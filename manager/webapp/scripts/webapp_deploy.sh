@@ -70,6 +70,9 @@ mkdir /var/www/html/rdp
 cp -f $WEBAPP/conf/template.rdp /var/www/html/rdp/
 
 mkdir /var/www/html/conf
+cp -f $WEBAPP/conf/win_template.cfg /var/www/html/conf/
+
+mkdir /var/www/html/conf/servers
 chown www-data /var/www/html/conf
 
 chmod a+x -R /var/www/html/

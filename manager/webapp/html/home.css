@@ -628,3 +628,13 @@ li{
 	padding-top : 5px;
 	padding-bottom : 5px;
 }
+
+
+.warning{
+	color: #FFFF00;
+	font-weight: bold;
+}
+.critical{
+	color: red;
+	font-weight: bold;
+}

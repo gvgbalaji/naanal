@@ -50,8 +50,38 @@ function rdp_fn($action, $nm, $ip, $user = "root") {
 	}
 }
 
+function nagios_fn($action, $nm, $ip, $new_nm = "") {
+	$filename = "conf/servers/$nm.cfg";
+	if ($action == "add") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+		$content = file_get_contents("conf/win_template.cfg");
+		$content = str_replace("HOST_IP", $ip, $content);
+		$content = str_replace("HOST_NAME", $nm, $content);
+		file_put_contents($filename, $content);
+	} elseif ($action == "delete") {
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+	} elseif ($action == 'rename') {
+		$new_name = "conf/servers/$new_nm.cfg";
+
+		if (file_exists($filename)) {
+			unlink($filename);
+		}
+		$content = file_get_contents("conf/win_template.cfg");
+		$content = str_replace("HOST_IP", $ip, $content);
+		$content = str_replace("HOST_NAME", $new_nm, $content);
+		file_put_contents($new_name, $content);
+
+	}
+	exec(" sudo service nagios restart");
+
+}
+
 function instanceadd() {
-	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $flt_ip, $max_count, $autostart, $con , $con2;
+	global $auth_cmd, $server, $img_nm, $flv_nm, $sec_grp, $flt_ip, $max_count, $autostart, $con, $con2;
 	$net_id = mysql_result(mysql_query("SELECT id  FROM neutron.networks where name='lan-net'", $con2), 0, 0);
 	$cmd1 = "nova $auth_cmd boot  --image $img_nm --flavor $flv_nm --security-groups $sec_grp --nic net-id=$net_id   $server";
 	//echo $cmd1, $autostart;
@@ -65,7 +95,14 @@ function instanceadd() {
 		$cmd2 = "nova $auth_cmd floating-ip-associate $server $flt_ip";
 		//echo $cmd2;
 		exec($cmd2);
+
+	} else {
+		$flt_ip = mysql_result(mysql_query("select floating_ip_address from neutron.floatingips where status='DOWN' limit 1;", $con2), 0, 0);
+		$cmd2 = "nova $auth_cmd floating-ip-associate $server $flt_ip";
+		//echo $cmd2;
+		exec($cmd2);
 	}
+	nagios_fn("add", $server, $flt_ip);
 }
 
 function instancedel($ser) {
@@ -83,6 +120,19 @@ function instancedel($ser) {
 
 	$autoq = "delete from naanal.custom_setting where instance='$ser'";
 	mysql_query($autoq, $con);
+	nagios_fn("delete", $ser);
+
+}
+
+function floatip_create($num = 1) {
+	global $auth_cmd;
+	$available = mysql_result(mysql_query("select count(*) from neutron.floatingips where status='DOWN';", $con2), 0, 0);
+	if ($num > $available) {
+		for ($i = 0; $i < ($num - $available); $i++) {
+			$cmd = "nova $auth_cmd floating-ip-create wan-net";
+			exec($cmd);
+		}
+	}
 
 }
 
@@ -93,6 +143,12 @@ function floatip_dis_associate() {
 		$cmd1 = "nova $auth_cmd floating-ip-disassociate $server $org_flt_ip";
 		//echo $cmd1;
 		exec($cmd1);
+	}
+
+	$query = "select username from naanal.user where instance='$server'";
+	$result = mysql_query($query, $con);
+	while ($row = mysql_fetch_array($result)) {
+		rdp_fn("add", $row[0], "", $row[0]);
 	}
 
 }
@@ -111,9 +167,9 @@ function floatip_associate() {
 	$query = "select username from naanal.user where instance='$server'";
 	$result = mysql_query($query, $con);
 	while ($row = mysql_fetch_array($result)) {
-		rdp_fn("add", $row[0], $flt_ip);
+		rdp_fn("add", $row[0], $flt_ip, $row[0]);
 	}
-
+	nagios_fn("add", $server, $flt_ip);
 }
 
 function start($ser) {
@@ -199,8 +255,11 @@ if ($sub_fn == 'activity') {
 		$q = "SELECT id FROM neutron.networks where name='lan-net' and status ='ACTIVE';";
 		$net_id = mysql_result(mysql_query($q), 0, 0);
 		if ($ins_count == 1) {
+			floatip_create();
+
 			instanceadd();
 		} elseif ($ins_count > 1) {
+			floatip_create($ins_count);
 			$flt_ip = "none";
 			$base_server = $server;
 
@@ -210,14 +269,17 @@ if ($sub_fn == 'activity') {
 				$server = $base_server;
 			}
 		}
-		floatip_associate();
 	} elseif ($fn == 'resize') {
 		$autoq = "update  naanal.custom_setting set autostart=$autostart where instance='$server'";
 		mysql_query($autoq, $con);
+
 		if ($server != $org_ins_nm) {
 			$cmd1 = "nova $auth_cmd rename $org_ins_nm $server";
 			//echo $cmd1;
 			exec($cmd1);
+			$autoq = "update  naanal.custom_setting set instance='$server' where instance='$org_ins_nm'";
+			mysql_query($autoq, $con);
+			nagios_fn("rename", $org_ins_nm, $flt_ip, $server);
 
 		}
 		if ($flv_nm != $org_flv_nm) {
@@ -322,8 +384,8 @@ while ($row = mysql_fetch_array($result)) {
 
 	$row[5] = lcfirst($row[5]);
 
-	$astrt = mysql_result(mysql_query("select autostart from naanal.custom_setting where instance='$row[0]';",$con),0,0);
-	
+	$astrt = mysql_result(mysql_query("select autostart from naanal.custom_setting where instance='$row[0]';", $con), 0, 0);
+
 	$autostart_text = "Disabled";
 
 	if ($astrt == 1) {
