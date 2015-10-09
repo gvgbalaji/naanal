@@ -1,5 +1,5 @@
 start_time=`date +%s`
-apt-get install -y unzip expect curl
+apt-get install -y unzip expect curl git
 apt-get -y install  ntp 
 apt-get -y install ubuntu-cloud-keyring
 echo "deb http://ubuntu-cloud.archive.canonical.com/ubuntu" \
