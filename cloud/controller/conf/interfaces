@@ -1,0 +1,23 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto WAN_PORT
+iface WAN_PORT inet manual 
+up ifconfig WAN_PORT up
+
+auto br-wan
+iface br-wan inet static
+bridge_ports all
+up ifconfig br-wan up
+address EXT_IP
+netmask MASK
+gateway GW_IP
+dns-nameservers 8.8.8.8
+
