@@ -14,7 +14,7 @@ up ifconfig WAN_PORT up
 
 auto br-wan
 iface br-wan inet static
-bridge_ports all
+#bridge_ports all
 up ifconfig br-wan up
 address EXT_IP
 netmask MASK
