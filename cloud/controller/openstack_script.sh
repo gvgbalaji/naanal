@@ -329,21 +329,6 @@ service neutron-server restart
 sleep 2
 neutron agent-list
 
-
-echo "Initiatilizing Networks..."
-
-neutron net-create wan-net --router:external  --provider:physical_network wan-phy-net --provider:network_type flat
-
-neutron subnet-create wan-net $wan_cidr --name wan-subnet --allocation-pool start=$wan_ip_start,end=$wan_ip_end --disable-dhcp --gateway $wan_gateway
-
-neutron net-create lan-net --provider:network_type flat --provider:physical_network lan-phy-net
-
-neutron subnet-create lan-net --name lan-subnet --gateway $lan_gateway $lan_cidr
-
-neutron router-create naanal-vrouter
-neutron router-interface-add naanal-vrouter lan-subnet
-neutron router-gateway-set naanal-vrouter wan-net
-
 echo "Neutron Finished"  
 
 
@@ -531,3 +516,19 @@ neutron net-list
 ceilometer meter-list
 heat stack-list
 cinder service-list
+
+echo "Initiatilizing Networks..."
+
+neutron net-create wan-net --router:external  --provider:physical_network wan-phy-net --provider:network_type flat
+
+neutron subnet-create wan-net $wan_cidr --name wan-subnet --allocation-pool start=$wan_ip_start,end=$wan_ip_end --disable-dhcp --gateway $wan_gateway
+
+neutron net-create lan-net --provider:network_type flat --provider:physical_network lan-phy-net
+
+neutron subnet-create lan-net --name lan-subnet --gateway $lan_gateway $lan_cidr
+
+neutron router-create naanal-vrouter
+neutron router-interface-add naanal-vrouter lan-subnet
+neutron router-gateway-set naanal-vrouter wan-net
+
+echo "Neutron Initialization Finished"  
