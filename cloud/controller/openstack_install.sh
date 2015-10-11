@@ -41,7 +41,7 @@ apt-get install -y cinder-api cinder-scheduler python-cinderclient cinder-volume
 
 mkdir -p /var/www/cgi-bin/keystone
 
-curl http://git.openstack.org/cgit/openstack/keystone/plain/httpd/keystone.py?h=stable/kilo | tee /var/www/cgi-bin/keystone/main /var/www/cgi-bin/keystone/admin
+#curl http://git.openstack.org/cgit/openstack/keystone/plain/httpd/keystone.py?h=stable/kilo | tee /var/www/cgi-bin/keystone/main /var/www/cgi-bin/keystone/admin
 
 
 mkdir /tmp/images
