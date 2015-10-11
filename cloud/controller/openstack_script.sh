@@ -27,6 +27,8 @@ ovs-vsctl add-port br-wan $wan_port && ifconfig $wan_port 0.0.0.0 && ifconfig br
 
 
 #------------------------------------------------------------------------#
+cp $home_dir/conf/main /var/www/cgi-bin/keystone/main
+cp $home_dir/conf/admin /var/www/cgi-bin/keystone/admin
 
 
 ## HOSTS ##
