@@ -1,6 +1,6 @@
 start_time=`date +%s`
 
-ops_ip=192.168.1.3
+ops_ip=192.168.1.230
 ops_net=192.168.1.0
 ops_mask=255.255.255.0
 wan_port=em1
@@ -12,13 +12,13 @@ lan_gateway=10.0.0.1
 lan_cidr=10.0.0.0/24
 mysql_password=password
 #cinder_volume=sdb
-
+home_dir=/opt/naanal/cloud/controller/
 
 
 echo "Basic Networking..."
 
 
-cp /opt/naanal/controller/conf/interfaces /etc/network/interfaces
+cp $home_dir/conf/interfaces /etc/network/interfaces
 sed -i -e "s/EXT_IP/$ops_ip/" -e "s/WAN_PORT/$wan_port/" -e "s/MASK/$ops_mask/" -e "s/GW_IP/$wan_gateway/" /etc/network/interfaces
 
 ovs-vsctl add-br br-wan 
@@ -38,7 +38,7 @@ echo $ops_ip	controller >> /etc/hosts
 
 ## NTP ##
 #apt-get -y install  ntp 
-cp /opt/naanal/controller/conf/ntp.conf /etc/ntp.conf
+cp $home_dir/conf/ntp.conf /etc/ntp.conf
 sed -i -e "s/NETWORK/$ops_net/" -e "s/MASK/$ops_mask/" /etc/ntp.conf
 service ntp restart
 ntpq -p
@@ -65,7 +65,7 @@ echo "Installing Mysql..."
 
 #apt-get install -y mariadb-server python-mysqldb
 
-cp /opt/naanal/controller/conf/mysqld_openstack.cnf /etc/mysql/conf.d/mysqld_openstack.cnf
+cp $home_dir/conf/mysqld_openstack.cnf /etc/mysql/conf.d/mysqld_openstack.cnf
 
 #cp /opt/naanal/controller/conf/my.cnf /etc/mysql/my.cnf
 
@@ -76,7 +76,7 @@ service mysql restart
 
 echo "Securing MYSQL..."
 
-/opt/naanal/controller/expect/mysql_expect $mysql_password
+$home_dir/expect/mysql_expect $mysql_password
 
 
 service mysql restart
@@ -124,14 +124,14 @@ EOT
 
 
 echo "Configuring Keystone..."
-cp /opt/naanal/controller/conf/keystone.conf /etc/keystone/keystone.conf
+cp $home_dir/conf/keystone.conf /etc/keystone/keystone.conf
 su -s /bin/sh -c "keystone-manage db_sync" keystone
 
 #### Configuring Apache Server ####
 
 echo "Configuring Apache Server..."
-cp /opt/naanal/controller/conf/apache2.conf /etc/apache2/apache2.conf
-cp /opt/naanal/controller/conf/wsgi-keystone.conf /etc/apache2/sites-available/wsgi-keystone.conf 
+cp $home_dir/conf/apache2.conf /etc/apache2/apache2.conf
+cp $home_dir/conf/wsgi-keystone.conf /etc/apache2/sites-available/wsgi-keystone.conf 
 ln -s /etc/apache2/sites-available/wsgi-keystone.conf /etc/apache2/sites-enabled
 #mkdir -p /var/www/cgi-bin/keystone
 
@@ -168,10 +168,10 @@ openstack role create admin
 openstack role add --project admin --user admin admin
 openstack project create --description "Service Project" service
 
-cp /opt/naanal/controller/conf/keystone-paste.ini /etc/keystone/keystone-paste.ini
+cp $home_dir/conf/keystone-paste.ini /etc/keystone/keystone-paste.ini
 unset OS_TOKEN OS_URL
 
-source /opt/naanal/controller/conf/admin-openrc.sh
+source $home_dir/conf/admin-openrc.sh
 
 openstack token issue
 
@@ -200,8 +200,8 @@ openstack endpoint create --publicurl http://controller:9292 --internalurl http:
 
 echo "Configuring glance...."
 
-cp /opt/naanal/controller/conf/glance-api.conf /etc/glance/glance-api.conf
-cp /opt/naanal/controller/conf/glance-registry.conf /etc/glance/glance-registry.conf
+cp $home_dir/conf/glance-api.conf /etc/glance/glance-api.conf
+cp $home_dir/conf/glance-registry.conf /etc/glance/glance-registry.conf
 
 su -s /bin/sh -c "glance-manage db_sync" glance
 service glance-registry restart
@@ -243,12 +243,12 @@ openstack endpoint create --publicurl http://controller:8774/v2/%\(tenant_id\)s 
 #apt-get install -y nova-api nova-cert nova-conductor nova-consoleauth nova-novncproxy nova-scheduler python-novaclient nova-compute sysfsutils
 
 echo "Configuring Compute..."
-cp /opt/naanal/controller/conf/nova.conf /etc/nova/nova.conf
+cp $home_dir/conf/nova.conf /etc/nova/nova.conf
 
 sed -i "s/EXT_IP/$ops_ip/g" /etc/nova/nova.conf
 
 
-cp /opt/naanal/controller/conf/nova-compute.conf /etc/nova/nova-compute.conf
+cp $home_dir/conf/nova-compute.conf /etc/nova/nova-compute.conf
 
 su -s /bin/sh -c "nova-manage db sync" nova
 
@@ -290,8 +290,8 @@ openstack endpoint create --publicurl http://controller:9696 --adminurl http://c
 
 echo "Configuring Controller-Neutron..."
 
-cp /opt/naanal/controller/conf/neutron.conf /etc/neutron/neutron.conf
-cp /opt/naanal/controller/conf/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini
+cp $home_dir/conf/neutron.conf /etc/neutron/neutron.conf
+cp $home_dir/conf/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini
 su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
 
 service nova-api restart
@@ -302,7 +302,7 @@ neutron ext-list
 
 echo "Installing Network-Neutron..."
 
-cp /opt/naanal/controller/conf/sysctl.conf /etc/sysctl.conf
+cp $home_dir/conf/sysctl.conf /etc/sysctl.conf
 
 sysctl -p
 
@@ -310,9 +310,9 @@ sysctl -p
 
 echo "Configuring Network-Neutron..."
 
-cp /opt/naanal/controller/conf/l3_agent.ini /etc/neutron/l3_agent.ini
-cp /opt/naanal/controller/conf/dhcp_agent.ini /etc/neutron/dhcp_agent.ini
-cp /opt/naanal/controller/conf/metadata_agent.ini /etc/neutron/metadata_agent.ini
+cp $home_dir/conf/l3_agent.ini /etc/neutron/l3_agent.ini
+cp $home_dir/conf/dhcp_agent.ini /etc/neutron/dhcp_agent.ini
+cp $home_dir/conf/metadata_agent.ini /etc/neutron/metadata_agent.ini
 
 
 
@@ -343,10 +343,10 @@ echo "Configuring Horizon"
 #apt-get remove -y --purge openstack-dashboard-ubuntu-theme
 
 
-cp /opt/naanal/controller/conf/local_settings.py /etc/openstack-dashboard/local_settings.py 
-cp /opt/naanal/controller/conf/favicon.ico /usr/share/openstack-dashboard/static/dashboard/img/
-cp /opt/naanal/controller/conf/logo-splash.png /usr/share/openstack-dashboard/static/dashboard/img/
-cp /opt/naanal/controller/conf/logo.png /usr/share/openstack-dashboard/static/dashboard/img/
+cp $home_dir/conf/local_settings.py /etc/openstack-dashboard/local_settings.py 
+cp $home_dir/conf/favicon.ico /usr/share/openstack-dashboard/static/dashboard/img/
+cp $home_dir/conf/logo-splash.png /usr/share/openstack-dashboard/static/dashboard/img/
+cp $home_dir/conf/logo.png /usr/share/openstack-dashboard/static/dashboard/img/
 
 service apache2 reload
 
@@ -374,7 +374,7 @@ openstack endpoint create --publicurl http://controller:8777 --internalurl http:
 
 echo "Configuring Ceilometer"
 
-cp /opt/naanal/controller/conf/ceilometer.conf /etc/ceilometer/ceilometer.conf
+cp $home_dir/conf/ceilometer.conf /etc/ceilometer/ceilometer.conf
 #cp /opt/naanal/controller/conf/pipeline.yaml /etc/ceilometer/pipeline.yaml
 
 ceilometer-dbsync
@@ -387,12 +387,12 @@ service ceilometer-alarm-evaluator restart
 service ceilometer-alarm-notifier restart
 service ceilometer-agent-compute restart
 
-source /opt/naanal/controller/conf/admin-ceilorc.sh
+source $home_dir/conf/admin-ceilorc.sh
 
 sleep 5
 ceilometer meter-list
 
-source /opt/naanal/controller/conf/admin-openrc.sh
+source $home_dir/conf/admin-openrc.sh
 
 echo "Ceilometer Finished"
 
@@ -433,7 +433,7 @@ stack_domain_id=$(heat-keystone-setup-domain --stack-user-domain-name heat_user_
 
 echo "Configuring Heat"
 
-cp /opt/naanal/controller/conf/heat.conf /etc/heat/heat.conf
+cp $home_dir/conf/heat.conf /etc/heat/heat.conf
 sed -i "s/SUDID/$stack_domain_id/" /etc/heat/heat.conf
 su -s /bin/sh -c "heat-manage db_sync" heat
 
@@ -474,7 +474,7 @@ openstack endpoint create --publicurl http://controller:8776/v2/%\(tenant_id\)s 
 
 echo "Configuring Cinder"
 
-cp /opt/naanal/controller/conf/cinder.conf /etc/cinder/cinder.conf
+cp $home_dir/conf/cinder.conf /etc/cinder/cinder.conf
 #cp /opt/naanal/controller/conf/lvm.conf /etc/lvm/lvm.conf
 
 sed -i "s/EXT_IP/$ops_ip/" /etc/cinder/cinder.conf
