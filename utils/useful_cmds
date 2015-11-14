@@ -1,5 +1,8 @@
 find . -type f -exec dos2unix {} \;
 
+find . -name "*.pyc" -type f
+find . -name "*.pyc" -type f -delete
+
 grep -rl 'project' ./ | xargs sed -i 's/project/network/g'
 
 
