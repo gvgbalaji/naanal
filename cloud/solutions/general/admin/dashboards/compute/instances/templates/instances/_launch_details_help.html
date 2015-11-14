@@ -1,0 +1,7 @@
+{% extends 'compute/instances/_flavors_and_quotas.html' %}
+{% load i18n %}
+
+{% block help_message %}
+<p>{% blocktrans %}Specify the details for launching an instance.{% endblocktrans %}</p>
+<p>{% blocktrans %}The chart below shows the resources used by this compute in relation to the compute's quotas.{% endblocktrans %}</p>
+{% endblock %}
