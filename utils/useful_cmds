@@ -1,4 +1,5 @@
 find . -type f -exec dos2unix {} \;
 
+grep -rl 'project' ./ | xargs sed -i 's/project/network/g'
 
 
