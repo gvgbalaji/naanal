@@ -1,0 +1,22 @@
+
+
+  <div class="container pagecontainer" ng-app="demoVideos" ng-controller="demoCtrl">
+      <div class="row democontainer" ng-repeat="category in videoData" >
+        <h2 class="strike-title">{{category.categoryname}}</h2>
+        <div class="col-xs-12 col-sm-4" ng-repeat="i in category.videos">
+          <div class=" demopanel">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <a class="demo" rel="fancybox-thumb" href="{{i.link}}" title="{{i.title}}">
+                  <img class="img-responsive" src="{{i.image}}" alt="{{i.title}}" title="{{i.title}}" />
+                </a>
+
+              </div>
+            </div>
+            <h4 class="demotitle">{{i.title}}</h4>
+          </div>
+        </div>
+
+      </div>
+  </div>
+ 

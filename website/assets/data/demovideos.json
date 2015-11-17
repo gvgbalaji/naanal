@@ -1,0 +1,39 @@
+{
+  "demovideos":[
+    {
+      "categoryname":"Big Data Demo Videos",
+      "videos":[
+          {
+            "link":"https://www.youtube.com/watch?v=1taT3tBpDqA",
+            "image":"http://img.youtube.com/vi/1taT3tBpDqA/0.jpg",
+            "title":"Platform Stack-Hadoop"
+          }
+        ]
+    },
+    {
+      "categoryname":"Applications",
+      "videos":[
+          {
+            "link":"https://www.youtube.com/watch?v=RVIapm6wPD4",
+            "image":"http://img.youtube.com/vi/RVIapm6wPD4/0.jpg",
+            "title":"App Stack- WordPress"
+          },
+          {
+            "link":"https://www.youtube.com/watch?v=NVW_q_gd284",
+            "image":"http://img.youtube.com/vi/NVW_q_gd284/0.jpg",
+            "title":"App Block- Apache Web Server"
+          }
+        ]
+    },
+    {
+      "categoryname":"Virtual Desktop Infrastructure",
+      "videos":[
+          {
+            "link":"https://www.youtube.com/watch?v=cZ9-wmkN8ps",
+             "image":"http://img.youtube.com/vi/cZ9-wmkN8ps/0.jpg",
+            "title":"Virtual Desktop Infrastructure"
+          }
+        ]
+    }
+    ]
+}
