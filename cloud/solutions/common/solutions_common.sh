@@ -7,7 +7,9 @@ src_dir=/opt/naanal/cloud/solutions/
 target_dir=/opt/naanal/webapp
 
 
-echo "Solutions Common..."
+echo "Installing dependent packages.."
+
+apt-get install -y python-pip python-dev libmysqlclient-dev libpq-dev libxml2-dev libxslt1-dev libffi-dev
 
 cd /opt/naanal/
 cp $src_dir/common/dl/horizon_kilo.gz .
