@@ -24,7 +24,7 @@ cd $target_dir
 #echo "Installing Horizon"
 #apt-get install -y openstack-dashboard
 
-echo "Configuring Horizon"
+echo "Configuring Horizon dashboard"
 
 #apt-get remove -y --purge openstack-dashboard-ubuntu-theme
 
