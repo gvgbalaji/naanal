@@ -1,0 +1,28 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+#auto MGMT_PORT
+#iface MGMT_PORT inet dhcp
+# This is an autoconfigured IPv6 interface
+#iface MGMT_PORT inet6 auto
+
+auto MGMT_PORT
+iface MGMT_PORT inet static
+up ifconfig MGMT_PORT up
+address COMPUTE_IP
+netmask NETMASK
+gateway GATEWAY_IP
+dns-nameservers 8.8.8.8
+
+auto DATA_PORT
+iface DATA_PORT inet manual
+up ifconfig DATA_PORT up
+
+auto br-lan 
+iface br-lan inet manual
+up ifconfig br-lan up
