@@ -1,5 +1,5 @@
 controller_ip=192.168.1.230
-compute_ip=1921.168.1.231
+compute_ip=192.168.1.231
 gateway=192.168.1.1
 netmask=255.255.255.0
 mgmt_port=eth0
@@ -64,3 +64,5 @@ chmod -R 777 /var/log/neutron/
 service openvswitch-switch restart
 service neutron-plugin-openvswitch-agent restart
 service nova-compute restart
+
+reboot
